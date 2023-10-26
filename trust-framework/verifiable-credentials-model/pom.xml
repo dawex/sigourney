@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.dawex.sigourney</groupId>
+		<artifactId>sigourney-trustframework</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<artifactId>sigourney-verifiable-credentials-model</artifactId>
+	<version>1.0.0</version>
+
+	<name>sigourney-verifiable-credentials-model</name>
+	<description>Sigourney Verifiable Credential model</description>
+	<url>https://github.com/dawex/sigourney</url>
+
+	<properties>
+		<json-path.version>2.8.0</json-path.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.dawex.sigourney</groupId>
+			<artifactId>sigourney-verifiable-credentials-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Tests -->
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>${assert4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<version>${json-path.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
