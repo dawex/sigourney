@@ -1,0 +1,162 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Gaia-X registrationNumber API 1.0",
+    "description": "The registryNumber notarization API is a tool used to return an unsigned VC  once all registrationNumber given by the participant are sucessfully checked by the API.\n\nSome useful links:\n- [Repository](https://gitlab.com/gaia-x/lab/compliance/gaia-x-notary-registrationnumber/)",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://registration.lab.gaia-x.eu/development"
+    }
+  ],
+  "paths": {
+    "/registrationNumberVC": {
+      "post": {
+        "tags": [
+          "registrationNumberVC"
+        ],
+        "summary": "Check a registrationNumber and return a VC",
+        "operationId": "checkRegistrationNumberVC",
+        "parameters": [
+          {
+            "name": "vcid",
+            "in": "query",
+            "description": "Identifier for the output VC",
+            "schema": {
+              "type": "string"
+            },
+            "example": "did:web:example.com:legalRegistrationNumber1"
+          }
+        ],
+        "requestBody": {
+          "description": "RegistrationNumber formated object as specified by the [service-characteristics](https://gitlab.com/gaia-x/technical-committee/service-characteristics/-/blob/develop/single-point-of-truth/yaml/gax-trust-framework/data-types/registration-number.yaml). Must also contain the participantID in the corresponding format.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "@context",
+                  "type",
+                  "id"
+                ],
+                "properties": {
+                  "@context": {
+                    "type": "string",
+                    "enum": ["https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant"]
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["gx:legalRegistrationNumber"]
+                  },
+                  "id": {
+                    "type": "string",
+                    "example": "did:web:gaia-x.eu:legalRegistrationNumber.json",
+                    "description": "Identifier of the credential subject"
+                  },
+                  "gx:vatID": {
+                    "type": "string",
+                    "example": "FR79537407926"
+                  },
+                  "gx:leiCode": {
+                    "type": "string",
+                    "example": "9695007586GCAKPYJ703"
+                  },
+                  "gx:EORI": {
+                    "type": "string",
+                    "example": "FR53740792600014"
+                  }
+                }
+              },
+              "examples": {
+                "vatID": {
+                  "value": {
+                    "@context": [
+                      "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant"
+                    ],
+                    "type": "gx:legalRegistrationNumber",
+                    "id": "did:web:gaia-x.eu:legalRegistrationNumber.json",
+                    "gx:vatID": "FR79537407926"
+                  }
+                },
+                "leiCode": {
+                  "value": {
+                    "@context": [
+                      "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant"
+                    ],
+                    "type": "gx:legalRegistrationNumber",
+                    "id": "did:web:gaia-x.eu:legalRegistrationNumber.json",
+                    "gx:leiCode": "9695007586GCAKPYJ703"
+                  }
+                },
+                "EORI": {
+                  "value": {
+                    "@context": [
+                      "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant"
+                    ],
+                    "type": "gx:legalRegistrationNumber",
+                    "id": "did:web:gaia-x.eu:legalRegistrationNumber.json",
+                    "gx:EORI": "FR53740792600014"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "@context": [
+                      "https://www.w3.org/2018/credentials/v1"
+                    ],
+                    "type": "VerifiableCredential",
+                    "id": "did:web:example.com:legalRegistrationNumber1",
+                    "issuer": "did:web:localhost%3A3000",
+                    "issuanceDate": "2023-03-31T13:32:07.979Z",
+                    "credentialSubject": {
+                      "@context": {
+                        "gx": "http://localhost:3000/gx#"
+                      },
+                      "type": "gx:legalRegistrationNumber",
+                      "id": "did:web:gaia-x.eu:legalRegistrationNumber.json",
+                      "gx:vatID": "FR79537407926"
+                    },
+                    "proof": {
+                      "type": "JsonWebSignature2020",
+                      "created": "2023-03-31T13:32:08.528Z",
+                      "proofPurpose": "assertionMethod",
+                      "verificationMethod": "did:web:localhost%3A3000",
+                      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..hhuXhVcYLICP3R0mGjyjfA6yZOw0qlRkQLFh5aTEBWEwgb6Fwr8LpPl5vHRVTNz7P6lR-AJ9SrJF7C_Bij-zbT3uRthRss0gWMO2bTBbqrhqN_I2tT7mUMZcl0F-DfjRPo4oVo2VV0MNgh23Ep6P0JjXv7PA0Wl_yb3Rt0ZFvkCigdxhatkdOPfENt-ArXyBgNn5JghSUwCzE5xbmuVeU93aFlA8gIWYh-FdtgggfoGIDObJVTuEqzy5kvfERSTa-gXpVctqFOYRGMS4jYzC9qj4YS4KKqeGafSsj60G2rOJkB6rcUYvzTe543QKv2V9bkCgfH3aAxt15FMeH7D6uA"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error",
+            "content": {
+              "schema": {
+                "example": {
+                  "registrationNumberCompliance": {
+                    "status": "invalid",
+                    "message": {
+                      "Faulty APIs": "The following APIs are not reachable : faultyAPIS ",
+                      "Faulty user provided values": "The following values were not compliant : faultyValues ",
+                      "Unknown error during the values verification process": "Uncaught error in the checkValues method"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

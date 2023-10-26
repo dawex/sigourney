@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.dawex.sigourney</groupId>
+		<artifactId>sigourney-trustframework</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<artifactId>sigourney-verifiable-credentials-core</artifactId>
+	<version>1.0.0</version>
+
+	<name>sigourney-verifiable-credentials-core</name>
+	<description>Sigourney Verifiable Credential core</description>
+	<url>https://github.com/dawex/sigourney</url>
+
+	<properties>
+		<bouncycastle.version>1.76</bouncycastle.version>
+		<jackson.version>2.15.3</jackson.version>
+		<jackson-datatype-jsr310.version>2.15.3</jackson-datatype-jsr310.version>
+		<jakarta-annotation.version>2.1.1</jakarta-annotation.version>
+		<jakarta-json.version>2.0.1</jakarta-json.version>
+		<hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
+		<nimbus-jose-jwt.version>9.37</nimbus-jose-jwt.version>
+		<openapi-generator.version>6.6.0</openapi-generator.version>
+		<rdf-urdna.version>1.2</rdf-urdna.version>
+		<swagger.version>2.2.16</swagger.version>
+		<titanium-json-ld.version>1.3.2</titanium-json-ld.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+
+		<!-- JSON-LD / RDF -->
+		<dependency>
+			<groupId>com.apicatalog</groupId>
+			<artifactId>titanium-json-ld</artifactId>
+			<version>${titanium-json-ld.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.setl</groupId>
+			<artifactId>rdf-urdna</artifactId>
+			<version>${rdf-urdna.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>jakarta.json</artifactId>
+			<version>${jakarta-json.version}</version>
+		</dependency>
+
+		<!-- Jose -->
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>${nimbus-jose-jwt.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk18on</artifactId>
+			<version>${bouncycastle.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk18on</artifactId>
+			<version>${bouncycastle.version}</version>
+		</dependency>
+
+		<!-- Open API -->
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+			<version>${jakarta-annotation.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>${jackson-datatype-jsr310.version}</version>
+		</dependency>
+
+		<!-- Tests -->
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>${assert4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Open API -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.openapitools</groupId>
+				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<version>${openapi-generator.version}</version>
+				<configuration>
+					<generatorName>java</generatorName>
+					<artifactId>com.dawex.sigourney.notary.client</artifactId>
+					<groupId>net.dw</groupId>
+					<generateAliasAsModel>false</generateAliasAsModel>
+					<generateApiTests>false</generateApiTests>
+					<generateModelTests>false</generateModelTests>
+					<generateApiDocumentation>false</generateApiDocumentation>
+					<output>${project.build.directory}/generated-sources/java</output>
+					<configOptions>
+						<sourceFolder>.</sourceFolder>
+						<serializationLibrary>jackson</serializationLibrary>
+						<java8>true</java8>
+						<library>native</library>
+						<dateLibrary>java8</dateLibrary>
+						<disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
+						<hideGenerationTimestamp>true</hideGenerationTimestamp>
+						<openApiNullable>false</openApiNullable>
+						<testOutput>${project.build.directory}/generated-test-sources/openapi</testOutput>
+						<useJakartaEe>true</useJakartaEe> <!-- this option comes with 6.3.0 -->
+					</configOptions>
+				</configuration>
+				<executions>
+					<execution>
+						<id>generate-notary-client</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/openapi/gaiax-notary-service.json</inputSpec>
+							<apiPackage>com.dawex.sigourney.notary.client</apiPackage>
+							<modelPackage>com.dawex.sigourney.notary.client.dto</modelPackage>
+							<invokerPackage>com.dawex.sigourney.notary.client</invokerPackage>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
