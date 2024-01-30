@@ -141,14 +141,16 @@
           "400": {
             "description": "Error",
             "content": {
-              "schema": {
-                "example": {
-                  "registrationNumberCompliance": {
-                    "status": "invalid",
-                    "message": {
-                      "Faulty APIs": "The following APIs are not reachable : faultyAPIS ",
-                      "Faulty user provided values": "The following values were not compliant : faultyValues ",
-                      "Unknown error during the values verification process": "Uncaught error in the checkValues method"
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "registrationNumberCompliance": {
+                      "status": "invalid",
+                      "message": {
+                        "Faulty APIs": "The following APIs are not reachable : faultyAPIS ",
+                        "Faulty user provided values": "The following values were not compliant : faultyValues ",
+                        "Unknown error during the values verification process": "Uncaught error in the checkValues method"
+                      }
                     }
                   }
                 }
