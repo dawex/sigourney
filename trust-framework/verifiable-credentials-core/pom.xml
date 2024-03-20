@@ -7,28 +7,27 @@
 	<parent>
 		<groupId>com.dawex.sigourney</groupId>
 		<artifactId>sigourney-trustframework</artifactId>
-		<version>1.0.2-SNAPSHOT</version>
+		<version>1.0.2</version>
 	</parent>
 
 	<artifactId>sigourney-verifiable-credentials-core</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 
 	<name>sigourney-verifiable-credentials-core</name>
 	<description>Sigourney Verifiable Credential core</description>
 	<url>https://github.com/dawex/sigourney</url>
 
 	<properties>
-		<bouncycastle.version>1.76</bouncycastle.version>
-		<jackson.version>2.15.3</jackson.version>
-		<jackson-datatype-jsr310.version>2.15.3</jackson-datatype-jsr310.version>
+		<bouncycastle.version>1.77</bouncycastle.version>
+		<jackson.version>2.17.0</jackson.version>
+		<jackson-datatype-jsr310.version>2.17.0</jackson-datatype-jsr310.version>
 		<jakarta-annotation.version>2.1.1</jakarta-annotation.version>
 		<jakarta-json.version>2.0.1</jakarta-json.version>
-		<hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
-		<nimbus-jose-jwt.version>9.37</nimbus-jose-jwt.version>
+		<nimbus-jose-jwt.version>9.37.3</nimbus-jose-jwt.version>
 		<openapi-generator.version>6.6.0</openapi-generator.version>
-		<rdf-urdna.version>1.2</rdf-urdna.version>
-		<swagger.version>2.2.16</swagger.version>
-		<titanium-json-ld.version>1.3.2</titanium-json-ld.version>
+		<rdf-urdna.version>1.3</rdf-urdna.version>
+		<swagger.version>2.2.20</swagger.version>
+		<titanium-json-ld.version>1.4.0</titanium-json-ld.version>
 	</properties>
 
 	<dependencies>
