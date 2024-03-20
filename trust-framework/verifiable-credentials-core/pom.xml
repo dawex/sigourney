@@ -7,11 +7,11 @@
 	<parent>
 		<groupId>com.dawex.sigourney</groupId>
 		<artifactId>sigourney-trustframework</artifactId>
-		<version>1.0.2</version>
+		<version>1.0.3-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>sigourney-verifiable-credentials-core</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3-SNAPSHOT</version>
 
 	<name>sigourney-verifiable-credentials-core</name>
 	<description>Sigourney Verifiable Credential core</description>
