@@ -36,7 +36,7 @@ class JsonWebSignatureUtilsTest {
 	}
 
 	@Test
-	void withInvalidSignatureShouldReturnFalse() throws ParseException {
+	void withInvalidSignatureShouldReturnFalse() {
 		final String invalidSignature = "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..invalid-signature";
 
 		assertThat(JsonWebSignatureUtils.isSignatureValid(invalidSignature, Constant.JSON_LD, jwk.toPublicJWK())).isFalse();

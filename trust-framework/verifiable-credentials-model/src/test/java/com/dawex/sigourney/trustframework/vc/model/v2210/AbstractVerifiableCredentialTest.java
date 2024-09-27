@@ -15,7 +15,7 @@ public abstract class AbstractVerifiableCredentialTest {
 
 	private static final JwkSetUtils.CreatedKeys CREATED_KEYS = JwkSetUtils.createKeysWithSelfSignedCertificate(null, "Test", 12);
 
-	private final static com.nimbusds.jose.jwk.JWK JWK = CREATED_KEYS.jwkSet().getKeys().stream().findFirst().orElseThrow();
+	private static final com.nimbusds.jose.jwk.JWK JWK = CREATED_KEYS.jwkSet().getKeys().stream().findFirst().orElseThrow();
 
 	private static final String PROOF_VERIFICATION_METHOD = "did:web:dawex.com:api:credentials#ded0da80-ef24-41ea-8824-34d082fb5dfb";
 

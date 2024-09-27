@@ -18,8 +18,6 @@ import java.util.List;
 
 class DataResourceVerifiableCredentialTest extends AbstractVerifiableCredentialTest {
 
-	private DataResourceVerifiableCredential service;
-
 	@Test
 	void shouldGenerateValidVerifiableCredentialForDataResource() throws JsonProcessingException {
 		// given
