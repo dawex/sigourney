@@ -1,0 +1,633 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getApplicationInformation",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Gaia-X Notary application information",
+            "content": {
+              "application/json": {
+                "example": {
+                  "software": "gaia-x-notary-registration-number",
+                  "description": "Gaia-X registration number verification API service",
+                  "version": "2.0.0",
+                  "documentation": "https://registration.lab.gaia-x.eu/development/docs/",
+                  "ontologyVersion": "24.04",
+                  "repository": {
+                    "type": "git",
+                    "url": "git@gitlab.com:gaia-x/lab/compliance/gaia-x-notary-registrationnumber.git"
+                  },
+                  "bugs": {
+                    "url": "https://gitlab.com/gaia-x/lab/compliance/gaia-x-notary-registrationnumber/-/issues"
+                  },
+                  "features": {
+                    "taxIDSupported": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "gx-notary"
+        ]
+      }
+    },
+    "/did.json": {
+      "get": {
+        "operationId": "DidController_getDid",
+        "summary": "Collect the Gaia-X Notary DID",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The Gaia-X Notary's Decentralized Identifier (DID)",
+            "content": {
+              "application/json": {
+                "example": {
+                  "@context": [
+                    "https://www.w3.org/ns/did/v1",
+                    "https://w3id.org/security/jwk/v1"
+                  ],
+                  "id": "did:web:registration.lab.gaia-x.eu:development",
+                  "verificationMethod": [
+                    {
+                      "id": "did:web:registration.lab.gaia-x.eu:development#X509-JWK",
+                      "type": "JsonWebKey",
+                      "controller": "did:web:registration.lab.gaia-x.eu:development",
+                      "publicKeyJwk": {
+                        "kid": "X509-JWK",
+                        "kty": "RSA",
+                        "n": "ulmXEa0nehbR338h6QaWLjMqfXE7mKA9PXoC_6_8d26xKQuBKAXa5k0uHhzQfNlAlxO-IpCDgf9cVzxIP-tkkefsjrXc8uvkdKNK6TY9kUxgUnOviiOLpHe88FB5dMTH6KUUGkjiPfq3P0F9fXHDEoQkGSpWui7eD897qSEdXFre_086ns3I8hSVCxoxlW9guXa_sRISIawCKT4UA3ZUKYyjtu0xRy7mRxNFh2wH0iSTQfqf4DWUUThX3S-jeRCRxqOGQdQlZoHym2pynJ1IYiiIOMO9L2IQrQl35kx94LGHiF8r8CRpLrgYXTVd9U17-nglrUmJmryECxW-555ppQ",
+                        "e": "AQAB",
+                        "alg": "PS256",
+                        "x5u": "https://registration.lab.gaia-x.eu/development/.well-known/x509CertificateChain.pem"
+                      }
+                    }
+                  ],
+                  "assertionMethod": [
+                    "did:web:registration.lab.gaia-x.eu:development#X509-JWK"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "did"
+        ]
+      }
+    },
+    "/.well-known/did.json": {
+      "get": {
+        "operationId": "WellKnown_DidController_getDid",
+        "summary": "Collect the Gaia-X Notary DID",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The Gaia-X Notary's Decentralized Identifier (DID)",
+            "content": {
+              "application/json": {
+                "example": {
+                  "@context": [
+                    "https://www.w3.org/ns/did/v1",
+                    "https://w3id.org/security/jwk/v1"
+                  ],
+                  "id": "did:web:registration.lab.gaia-x.eu:development",
+                  "verificationMethod": [
+                    {
+                      "id": "did:web:registration.lab.gaia-x.eu:development#X509-JWK",
+                      "type": "JsonWebKey",
+                      "controller": "did:web:registration.lab.gaia-x.eu:development",
+                      "publicKeyJwk": {
+                        "kid": "X509-JWK",
+                        "kty": "RSA",
+                        "n": "ulmXEa0nehbR338h6QaWLjMqfXE7mKA9PXoC_6_8d26xKQuBKAXa5k0uHhzQfNlAlxO-IpCDgf9cVzxIP-tkkefsjrXc8uvkdKNK6TY9kUxgUnOviiOLpHe88FB5dMTH6KUUGkjiPfq3P0F9fXHDEoQkGSpWui7eD897qSEdXFre_086ns3I8hSVCxoxlW9guXa_sRISIawCKT4UA3ZUKYyjtu0xRy7mRxNFh2wH0iSTQfqf4DWUUThX3S-jeRCRxqOGQdQlZoHym2pynJ1IYiiIOMO9L2IQrQl35kx94LGHiF8r8CRpLrgYXTVd9U17-nglrUmJmryECxW-555ppQ",
+                        "e": "AQAB",
+                        "alg": "PS256",
+                        "x5u": "https://registration.lab.gaia-x.eu/development/.well-known/x509CertificateChain.pem"
+                      }
+                    }
+                  ],
+                  "assertionMethod": [
+                    "did:web:registration.lab.gaia-x.eu:development#X509-JWK"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "did"
+        ]
+      }
+    },
+    "/x509CertificateChain.pem": {
+      "get": {
+        "operationId": "WellKnown_CertificateController_getCertChain",
+        "summary": "Collect the Gaia-X Notary X509 certificate",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The Gaia-X Notary's certificate",
+            "content": {
+              "application/pem-certificate-chain": {
+                "example": "-----BEGIN CERTIFICATE-----\nMIIEFDCCAvygAwIBAgIBATANBgkqhkiG9w0BAQUFADB9MRYwFAYDVQQDEw1kZXYu\nZ2FpYS14LmV1MQswCQYDVQQGEwJGUjEbMBkGA1UECBMSTm91dmVsbGUtQXF1aXRh\naW5lMREwDwYDVQQHEwhCb3JkZWF1eDETMBEGA1UEChMKR2FpYS1YIERldjERMA8G\nA1UECxMIQ1RPIFRlYW0wHhcNMjMxMjAxMDc1NjQyWhcNMjQxMjAxMDc1NjQyWjB9\nMRYwFAYDVQQDEw1kZXYuZ2FpYS14LmV1MQswCQYDVQQGEwJGUjEbMBkGA1UECBMS\nTm91dmVsbGUtQXF1aXRhaW5lMREwDwYDVQQHEwhCb3JkZWF1eDETMBEGA1UEChMK\nR2FpYS1YIERldjERMA8GA1UECxMIQ1RPIFRlYW0wggEiMA0GCSqGSIb3DQEBAQUA\nA4IBDwAwggEKAoIBAQDPQOFYPyIBTKL+JfcUOGZn/2EQDhslgieN/qptgWP9o+Fr\no1YsnxIGXPtjQ0EhAOm7JH4W8AoeO9EMZ76P/GG1KT0cp+2IICaV2eUqFGYuUtIn\nbo9h2aaj05DYvOEvrL9P2OuySDmw8f11Khm5fjSVi04/xyZNvPlV+wGIqd5glAnB\nrtTAdC4zMxf0fewPdDA1pbAneo+TFWyWlTsGR0nlvmvqAgZj89c4luPCaio/P57i\nic4+Mt4wvOL5QeRwhFWJB4tINjXgv1lYfiycn/yGeeGuGFNxuY8N+d42Fola3YzK\nITYIRQtUkiM5hfPWgM0DrovUvw+hlKwcTK3ZfgFFAgMBAAGjgZ4wgZswDAYDVR0T\nBAUwAwEB/zALBgNVHQ8EBAMCAvQwOwYDVR0lBDQwMgYIKwYBBQUHAwEGCCsGAQUF\nBwMCBggrBgEFBQcDAwYIKwYBBQUHAwQGCCsGAQUFBwMIMBEGCWCGSAGG+EIBAQQE\nAwIA9zAPBgNVHREECDAGhwR/AAABMB0GA1UdDgQWBBT1BvOfP1ecxrRFGtJWTXm2\nd5/ALzANBgkqhkiG9w0BAQUFAAOCAQEASSepIDFBw5+ThbgKPhIXte8Rjbx0hNqT\nqt/cplp3159K08l81H5v4O1QozS7zSTO4bV7RSFr/0FuSu9svBqqcl4rYqWa4n7w\nWBg2ahaQ8Nx8MMHuoqsWzFugL60wVsRm1uXqo/EI1yCmTUpDCB8p1pS1MW6sq1GA\nv2Ic4YxK+9X92epLKwx077UzYemLH8f6y/Y+BgwYliRRWEAwPoS9ZONeyxK8iSNm\nAurH3CsZKaG+jpSObL2+mAkiZK/IyJV5LiX0eDpH9U0w7H/LEQFGs/mMFmnMZLgq\nsOzDVjSUT3BWNSLZbN0uhap4MhLBFpCiZt8MYle18a2ZIQpOV9HKnQ==\n-----END CERTIFICATE-----"
+              }
+            }
+          }
+        },
+        "tags": [
+          "certificate"
+        ]
+      }
+    },
+    "/.well-known/x509CertificateChain.pem": {
+      "get": {
+        "operationId": "CertificateController_getCertChain",
+        "summary": "Collect the Gaia-X Notary X509 certificate",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The Gaia-X Notary's certificate",
+            "content": {
+              "application/pem-certificate-chain": {
+                "example": "-----BEGIN CERTIFICATE-----\nMIIEFDCCAvygAwIBAgIBATANBgkqhkiG9w0BAQUFADB9MRYwFAYDVQQDEw1kZXYu\nZ2FpYS14LmV1MQswCQYDVQQGEwJGUjEbMBkGA1UECBMSTm91dmVsbGUtQXF1aXRh\naW5lMREwDwYDVQQHEwhCb3JkZWF1eDETMBEGA1UEChMKR2FpYS1YIERldjERMA8G\nA1UECxMIQ1RPIFRlYW0wHhcNMjMxMjAxMDc1NjQyWhcNMjQxMjAxMDc1NjQyWjB9\nMRYwFAYDVQQDEw1kZXYuZ2FpYS14LmV1MQswCQYDVQQGEwJGUjEbMBkGA1UECBMS\nTm91dmVsbGUtQXF1aXRhaW5lMREwDwYDVQQHEwhCb3JkZWF1eDETMBEGA1UEChMK\nR2FpYS1YIERldjERMA8GA1UECxMIQ1RPIFRlYW0wggEiMA0GCSqGSIb3DQEBAQUA\nA4IBDwAwggEKAoIBAQDPQOFYPyIBTKL+JfcUOGZn/2EQDhslgieN/qptgWP9o+Fr\no1YsnxIGXPtjQ0EhAOm7JH4W8AoeO9EMZ76P/GG1KT0cp+2IICaV2eUqFGYuUtIn\nbo9h2aaj05DYvOEvrL9P2OuySDmw8f11Khm5fjSVi04/xyZNvPlV+wGIqd5glAnB\nrtTAdC4zMxf0fewPdDA1pbAneo+TFWyWlTsGR0nlvmvqAgZj89c4luPCaio/P57i\nic4+Mt4wvOL5QeRwhFWJB4tINjXgv1lYfiycn/yGeeGuGFNxuY8N+d42Fola3YzK\nITYIRQtUkiM5hfPWgM0DrovUvw+hlKwcTK3ZfgFFAgMBAAGjgZ4wgZswDAYDVR0T\nBAUwAwEB/zALBgNVHQ8EBAMCAvQwOwYDVR0lBDQwMgYIKwYBBQUHAwEGCCsGAQUF\nBwMCBggrBgEFBQcDAwYIKwYBBQUHAwQGCCsGAQUFBwMIMBEGCWCGSAGG+EIBAQQE\nAwIA9zAPBgNVHREECDAGhwR/AAABMB0GA1UdDgQWBBT1BvOfP1ecxrRFGtJWTXm2\nd5/ALzANBgkqhkiG9w0BAQUFAAOCAQEASSepIDFBw5+ThbgKPhIXte8Rjbx0hNqT\nqt/cplp3159K08l81H5v4O1QozS7zSTO4bV7RSFr/0FuSu9svBqqcl4rYqWa4n7w\nWBg2ahaQ8Nx8MMHuoqsWzFugL60wVsRm1uXqo/EI1yCmTUpDCB8p1pS1MW6sq1GA\nv2Ic4YxK+9X92epLKwx077UzYemLH8f6y/Y+BgwYliRRWEAwPoS9ZONeyxK8iSNm\nAurH3CsZKaG+jpSObL2+mAkiZK/IyJV5LiX0eDpH9U0w7H/LEQFGs/mMFmnMZLgq\nsOzDVjSUT3BWNSLZbN0uhap4MhLBFpCiZt8MYle18a2ZIQpOV9HKnQ==\n-----END CERTIFICATE-----"
+              }
+            }
+          }
+        },
+        "tags": [
+          "certificate"
+        ]
+      }
+    },
+    "/registration-numbers/vat-id/{vatId}": {
+      "get": {
+        "operationId": "VatIdController_checkVatId",
+        "summary": "Produce a registration number verifiable credential from a VAT ID",
+        "description": "This endpoint checks the given VAT ID against the european commission's API and responds with a \n    verifiable credential attesting the VAT ID's validity as a registration number",
+        "parameters": [
+          {
+            "name": "vcId",
+            "required": true,
+            "in": "query",
+            "description": "The output verifiable credential ID",
+            "schema": {
+              "example": "https://example.org/credentials/123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "subjectId",
+            "required": true,
+            "in": "query",
+            "description": "The output credential subject ID",
+            "schema": {
+              "example": "https://example.org/subjects/123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "vatId",
+            "required": true,
+            "in": "path",
+            "description": "The VAT ID to verify and produce the verifiable credential from",
+            "schema": {
+              "example": "BE0762747721",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Certified registration number verifiable credential",
+            "content": {
+              "application/vc+ld+jwt": {
+                "schema": {
+                  "type": "string",
+                  "description": "JSON Web Token"
+                },
+                "example": "eyJhbGciOiJQUzI1NiIsImlzcyI6ImRpZDp3ZWI6bG9jYWxob3N0OjMwMDAiLCJraWQiOiJkaWQ6d2ViOmxvY2FsaG9zdDozMDAwI1g1MDktSldLIiwiaWF0IjoxNzIxMDQ4OTQzMzMxLCJleHAiOjAsImN0eSI6InZjK2xkIiwidHlwIjoidmMrbGQrand0In0.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiLCJodHRwczovL3czaWQub3JnL2dhaWEteC9kZXZlbG9wbWVudCMiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCJdLCJpZCI6Imh0dHBzOi8vZXhhbXBsZS5vcmcvY3JlZGVudGlhbHMvMTIzIiwibmFtZSI6IlZBVCBJRCIsImRlc2NyaXB0aW9uIjoiVmFsdWUgQWRkZWQgVGF4IElkZW50aWZpZXIiLCJpc3N1ZXIiOiJkaWQ6d2ViOmxvY2FsaG9zdDozMDAwIiwidmFsaWRGcm9tIjoiMjAyNC0wNy0xNVQxNTowOTowMy4zMzErMDI6MDAiLCJ2YWxpZFVudGlsIjpudWxsLCJjcmVkZW50aWFsU3ViamVjdCI6eyJpZCI6Imh0dHBzOi8vZXhhbXBsZS5vcmcvc3ViamVjdHMvMTIzIiwidHlwZSI6Imd4OlZhdElEIiwiZ3g6dmF0SUQiOiJCRTA3NjI3NDc3MjEiLCJneDpjb3VudHJ5Q29kZSI6IkJFIn0sImV2aWRlbmNlIjp7Imd4OmV2aWRlbmNlT2YiOiJWQVRfSUQiLCJneDpldmlkZW5jZVVSTCI6Imh0dHA6Ly9lYy5ldXJvcGEuZXUvdGF4YXRpb25fY3VzdG9tcy92aWVzL3NlcnZpY2VzL2NoZWNrVmF0U2VydmljZSIsImd4OmV4ZWN1dGlvbkRhdGUiOiIyMDI0LTA3LTE1VDE1OjA5OjAzLjMzMCswMjowMCJ9fQ.fpPFU2xMJgfGMO-SGdu9jFuJCVhU5TVDKDR0VHRA8vf06iJ6reN54Uu_vSOpK_4TqKUCZBzrmO1QY-kBliMj3hAba7c8OFKnVD-WlC7DbQoEUJvw6w2MCoK1rvlUWUR9v-YToDa1Woj5gT1Qw4EJjlKtrXNMD4hldYSYa8auNbp0Ky_5SugfCUqNWvsLiGlMQtYjgwpPKGNVt7Jp2upIj9O6dpxkq65n5dCpbBKfcESyZsedGfZdNBlVtd-xRTk0D8TDIeqQvHPHXUCk9zNTzsXIKX1ictf72cLWM3FZTxr9yWT5yyk9R0FoSZTw2VcoYF8F_z-tATqJC2ScHK2HsA"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid legal registration number verifiable credential",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Payload missing": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The request payload is missing"
+                    }
+                  },
+                  "Verifiable credential ID missing": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The verifiable credential ID is missing, please provide it through the vcId query parameter"
+                    }
+                  },
+                  "Subject ID missing": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The subject ID is missing, please provide it through the subjectId query parameter"
+                    }
+                  },
+                  "Invalid registration numbers or API error": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The given VAT_ID[BE0762747721] couldn't be validated: error message"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "registration-number"
+        ]
+      }
+    },
+    "/registration-numbers/lei-code/{leiCode}": {
+      "get": {
+        "operationId": "LeiCodeController_checkLeiCode",
+        "summary": "Produce a registration number verifiable credential from a Legal Entity Identifier (LEI) code",
+        "description": "This endpoint checks the given Legal Entity Identifier (LEI) code against the Global Legal Entity \n    Identifier Foundation (GLEIF) API and responds with a verifiable credential attesting the LEI code's validity as \n    a registration number",
+        "parameters": [
+          {
+            "name": "vcId",
+            "required": true,
+            "in": "query",
+            "description": "The output verifiable credential ID",
+            "schema": {
+              "example": "https://example.org/credentials/123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "subjectId",
+            "required": true,
+            "in": "query",
+            "description": "The output credential subject ID",
+            "schema": {
+              "example": "https://example.org/subjects/123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "leiCode",
+            "required": true,
+            "in": "path",
+            "description": "The Legal Entity Identifier (LEI) code to verify and produce the verifiable credential from",
+            "schema": {
+              "example": "9695007586GCAKPYJ703",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Certified registration number verifiable credential",
+            "content": {
+              "application/vc+ld+jwt": {
+                "schema": {
+                  "type": "string",
+                  "description": "JSON Web Token"
+                },
+                "example": "eyJhbGciOiJQUzI1NiIsImlzcyI6ImRpZDp3ZWI6bG9jYWxob3N0OjMwMDAiLCJraWQiOiJkaWQ6d2ViOmxvY2FsaG9zdDozMDAwI1g1MDktSldLIiwiaWF0IjoxNzIxMDUyMjY0MjIyLCJleHAiOjE3Mjg4MjgyNjQyMjIsImN0eSI6InZjK2xkIiwidHlwIjoidmMrbGQrand0In0.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiLCJodHRwczovL3czaWQub3JnL2dhaWEteC9kZXZlbG9wbWVudCMiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCJdLCJpZCI6Imh0dHBzOi8vZXhhbXBsZS5vcmcvY3JlZGVudGlhbHMvMTIzIiwibmFtZSI6IkxFSSBDb2RlIiwiZGVzY3JpcHRpb24iOiJMZWdhbCBFbnRpdHkgSWRlbnRpZmllciIsImlzc3VlciI6ImRpZDp3ZWI6bG9jYWxob3N0OjMwMDAiLCJ2YWxpZEZyb20iOiIyMDI0LTA3LTE1VDE2OjA0OjI0LjIyMiswMjowMCIsInZhbGlkVW50aWwiOiIyMDI0LTEwLTEzVDE2OjA0OjI0LjIyMiswMjowMCIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7IkBjb250ZXh0Ijp7InNjaGVtYSI6Imh0dHBzOi8vc2NoZW1hLm9yZy8ifSwiaWQiOiJodHRwczovL2V4YW1wbGUub3JnL3N1YmplY3RzLzEyMyIsInR5cGUiOiJneDpMZWlDb2RlIiwic2NoZW1hOmxlaUNvZGUiOiI5Njk1MDA3NTg2R0NBS1BZSjcwMyIsImd4OmNvdW50cnlDb2RlIjoiRlIiLCJneDpzdWJkaXZpc2lvbkNvdW50cnlDb2RlIjpudWxsfSwiZXZpZGVuY2UiOnsiZ3g6ZXZpZGVuY2VPZiI6IkxFSV9DT0RFIiwiZ3g6ZXZpZGVuY2VVUkwiOiJodHRwczovL2FwaS5nbGVpZi5vcmcvYXBpL3YxL2xlaS1yZWNvcmRzLzk2OTUwMDc1ODZHQ0FLUFlKNzAzIiwiZ3g6ZXhlY3V0aW9uRGF0ZSI6IjIwMjQtMDctMTVUMTY6MDQ6MjQuMjIxKzAyOjAwIn19.Dj8S4ONFEp3-12JBIfIP_Ru_B6xtky-9W1UDOWSlytNGHlQKkPZZmMUP9Ad9TPyvfEaG86kYWltlEZEscIjtYyTgLJPQqZkzqUZwdKsmu78kgXCV8QU30CVrQ2npwdJEtfC94H-fq6zcMZW9MOEBd9jUy-nHORbzu0krNWP_AxMJq_PQZeCEr0ur7D2bFSz2kWtz3RawDfp1zt0UpAuDHoToAUJ4c9UgcW-W5ZemVFT9PAycLUl0IvuaTxOja-C0LIuw1Ma3W5PVZfXsjNrCdvVfFsOi_No6ic_u3DrSdc0-zdg7tBwUCcENHKjG9wAgPJ7gajq-t-a9OfVtyrpshw"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid legal registration number verifiable credential",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Payload missing": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The request payload is missing"
+                    }
+                  },
+                  "Verifiable credential ID missing": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The verifiable credential ID is missing, please provide it through the vcId query parameter"
+                    }
+                  },
+                  "Subject ID missing": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The subject ID is missing, please provide it through the subjectId query parameter"
+                    }
+                  },
+                  "Invalid registration number or API error": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The given LEI_CODE[9695007586GCAKPYJ703] couldn't be validated: error message"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "registration-number"
+        ]
+      }
+    },
+    "/registration-numbers/eori/{eori}": {
+      "get": {
+        "operationId": "EoriController_checkEori",
+        "summary": "Produce a registration number verifiable credential from a Economic Operators Registration and \n    Identification (EORI)",
+        "description": "This endpoint checks the given Economic Operators Registration and Identification (EORI)  against the \n    European Taxation Customs API and responds with a verifiable credential attesting the EORI's validity as a \n    registration number",
+        "parameters": [
+          {
+            "name": "vcId",
+            "required": true,
+            "in": "query",
+            "description": "The output verifiable credential ID",
+            "schema": {
+              "example": "https://example.org/credentials/123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "subjectId",
+            "required": true,
+            "in": "query",
+            "description": "The output credential subject ID",
+            "schema": {
+              "example": "https://example.org/subjects/123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "eori",
+            "required": true,
+            "in": "path",
+            "description": "The Economic Operators Registration and Identification (EORI) to verify and produce the verifiable \n    credential from",
+            "schema": {
+              "example": "FR53740792600014",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Certified registration number verifiable credential",
+            "content": {
+              "application/vc+ld+jwt": {
+                "schema": {
+                  "type": "string",
+                  "description": "JSON Web Token"
+                },
+                "example": "eyJhbGciOiJQUzI1NiIsImlzcyI6ImRpZDp3ZWI6bG9jYWxob3N0OjMwMDAiLCJraWQiOiJkaWQ6d2ViOmxvY2FsaG9zdDozMDAwI1g1MDktSldLIiwiaWF0IjoxNzIxMDUyNDM5MzIwLCJleHAiOjE3Mjg4Mjg0MzkzMjAsImN0eSI6InZjK2xkIiwidHlwIjoidmMrbGQrand0In0.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiLCJodHRwczovL3czaWQub3JnL2dhaWEteC9kZXZlbG9wbWVudCMiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCJdLCJpZCI6Imh0dHBzOi8vZXhhbXBsZS5vcmcvY3JlZGVudGlhbHMvMTIzIiwibmFtZSI6IkVPUkkgUmVnaXN0cmF0aW9uIE51bWJlciIsImRlc2NyaXB0aW9uIjoiRWNvbm9taWMgT3BlcmF0b3JzIFJlZ2lzdHJhdGlvbiBhbmQgSWRlbnRpZmljYXRpb24gcmVnaXN0cmF0aW9uIG51bWJlciIsImlzc3VlciI6ImRpZDp3ZWI6bG9jYWxob3N0OjMwMDAiLCJ2YWxpZEZyb20iOiIyMDI0LTA3LTE1VDE2OjA3OjE5LjMyMCswMjowMCIsInZhbGlkVW50aWwiOiIyMDI0LTEwLTEzVDE2OjA3OjE5LjMyMCswMjowMCIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiaHR0cHM6Ly9leGFtcGxlLm9yZy9zdWJqZWN0cy8xMjMiLCJ0eXBlIjoiZ3g6RU9SSSIsImd4OmVvcmkiOiJGUjUzNzQwNzkyNjAwMDE0IiwiZ3g6Y291bnRyeSI6IiJ9LCJldmlkZW5jZSI6eyJneDpldmlkZW5jZU9mIjoiRU9SSSIsImd4OmV2aWRlbmNlVVJMIjoiaHR0cHM6Ly9lYy5ldXJvcGEuZXUvdGF4YXRpb25fY3VzdG9tcy9kZHMyL2Vvcy92YWxpZGF0aW9uL3NlcnZpY2VzL3ZhbGlkYXRpb24iLCJneDpleGVjdXRpb25EYXRlIjoiMjAyNC0wNy0xNVQxNjowNzoxOS4zMjArMDI6MDAifX0.qgJAO9jWBoHA5ywXn4rZVBavH8HgsrTvKdgdZjOAXUnqCVh2kmkM4Ew9amnjqkTW04lrLeTOhG5q2g09RcxC3Dp4VImEkO5DPXhHQP879bPtN2TcAKXGtlWQTiYFh4sp_uELRsRArZYcAcDVkbra-0-L8ECKnPkS0xx1x0agJeC5L7gHRzU1pyrFLEw0NxalT2iFc2hRn4CwehWYQ4C8mqarq9QZF3U94Jwrkg4dCP464Mp5LkwD_QE_fFrw0yNiW_S-bmbDXIW3ZhN6UjyZxulIU6eBRGtm1QbYWGmbyQo2hGnGTgjy0ofcSQ3YJZt5OUVu2r4rwdC9q6hDzrRQEg"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid legal registration number verifiable credential",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Payload missing": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The request payload is missing"
+                    }
+                  },
+                  "Verifiable credential ID missing": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The verifiable credential ID is missing, please provide it through the vcId query parameter"
+                    }
+                  },
+                  "Subject ID missing": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The subject ID is missing, please provide it through the subjectId query parameter"
+                    }
+                  },
+                  "Invalid registration number or API error": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The given EORI[FR53740792600014] couldn't be validated: error message"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "registration-number"
+        ]
+      }
+    },
+    "/registration-numbers/tax-id/{taxId}": {
+      "get": {
+        "operationId": "OpenCorporatesTaxIdController_checkTaxId",
+        "summary": "Produce a registration number verifiable credential from an OpenCorporates Tax ID",
+        "description": "This endpoint checks the given OpenCorporates Tax ID against the OpenCorporates API and responds with \n    a verifiable credential attesting the tax ID's validity as a registration number",
+        "parameters": [
+          {
+            "name": "vcId",
+            "required": true,
+            "in": "query",
+            "description": "The output verifiable credential ID",
+            "schema": {
+              "example": "https://example.org/credentials/123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "subjectId",
+            "required": true,
+            "in": "query",
+            "description": "The output credential subject ID",
+            "schema": {
+              "example": "https://example.org/subjects/123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "taxId",
+            "required": true,
+            "in": "path",
+            "description": "The OpenCorporates tax ID code to verify and produce the verifiable credential from",
+            "schema": {
+              "example": "0762747721",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Certified registration number verifiable credential",
+            "content": {
+              "application/vc+ld+jwt": {
+                "schema": {
+                  "type": "string",
+                  "description": "JSON Web Token"
+                },
+                "example": "eyJhbGciOiJQUzI1NiIsImlzcyI6ImRpZDp3ZWI6bG9jYWxob3N0OjMwMDAiLCJraWQiOiJkaWQ6d2ViOmxvY2FsaG9zdDozMDAwI1g1MDktSldLIiwiaWF0IjoxNzIxMDUxNjI1OTQzLCJleHAiOjE3Mjg4Mjc2MjU5NDMsImN0eSI6InZjK2xkIiwidHlwIjoidmMrbGQrand0In0.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiLCJodHRwczovL3czaWQub3JnL2dhaWEteC9kZXZlbG9wbWVudCMiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCJdLCJpZCI6Imh0dHBzOi8vZXhhbXBsZS5vcmcvY3JlZGVudGlhbHMvMTIzIiwibmFtZSI6IlRheCBJRCIsImRlc2NyaXB0aW9uIjoiT3BlbiBDb3Jwb3JhdGVzIEFQSSBUYXggSUQiLCJpc3N1ZXIiOiJkaWQ6d2ViOmxvY2FsaG9zdDozMDAwIiwidmFsaWRGcm9tIjoiMjAyNC0wNy0xNVQxNTo1Mzo0NS45NDMrMDI6MDAiLCJ2YWxpZFVudGlsIjoiMjAyNC0xMC0xM1QxNTo1Mzo0NS45NDMrMDI6MDAiLCJjcmVkZW50aWFsU3ViamVjdCI6eyJAY29udGV4dCI6eyJzY2hlbWEiOiJodHRwczovL3NjaGVtYS5vcmcvIn0sImlkIjoiaHR0cHM6Ly9leGFtcGxlLm9yZy9zdWJqZWN0cy8xMjMiLCJ0eXBlIjoiZ3g6VGF4SUQiLCJzY2hlbWE6dGF4SUQiOiIwNzYyNzQ3NzIxIn0sImV2aWRlbmNlIjp7Imd4OmV2aWRlbmNlT2YiOiJUQVhfSUQiLCJneDpldmlkZW5jZVVSTCI6Imh0dHBzOi8vb3BlbmNvcnBvcmF0ZXMuY29tL2NvbXBhbmllcy9iZS8wNzYyNzQ3NzIxIiwiZ3g6ZXhlY3V0aW9uRGF0ZSI6IjIwMjQtMDctMTVUMTU6NTM6NDUuOTQzKzAyOjAwIn19.ERDw7E8cZeCMF1KOP2ZFQLkUFcWhMBPbJ2WY2gtsFgZvR3HddcOoycoPcj7IfQGhtEWHVNoGgbKfYnbKaTeaoESy-1E5oPGUvNmXSk3XICbpNTFPiYyPdCICzhqzOn7icp9dYo8G2VFnY7CPB-z8zpb_yD43plzYePc7QLJkEJclTK9ZVN7cZ3dLCbzzwxe_68ZFSWGfc9D5MU56Ktd_sK8IpkVHplf9rmRJIvVXt8wOE5kRNxdBP5TrXyy2ZTgWv29KkUBRnIL1pnCdJAsDOmqK47N84HSWBxvw7OIEaOLoWuPzdLaRq48ukeycwmjms0xbs8cgj7mGg20wLVCbHQ"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid legal registration number verifiable credential",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Payload missing": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The request payload is missing"
+                    }
+                  },
+                  "Verifiable credential ID missing": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The verifiable credential ID is missing, please provide it through the vcId query parameter"
+                    }
+                  },
+                  "Subject ID missing": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The subject ID is missing, please provide it through the subjectId query parameter"
+                    }
+                  },
+                  "Invalid registration number or API error": {
+                    "value": {
+                      "statusCode": 400,
+                      "message": "The given TAX_ID[0762747721] couldn't be validated: error message"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "registration-number"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Notary",
+    "description": "Gaia-X Notary module implementation to validate legal registration numbers",
+    "version": "2.8.1",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "gx-notary",
+      "description": ""
+    }
+  ],
+  "servers": [
+    {
+      "url": "/main"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "CredentialSubjectDto": {
+        "type": "object",
+        "properties": {
+          "@context": {
+            "type": "object"
+          },
+          "type": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "@context",
+          "type",
+          "id"
+        ]
+      },
+      "EvidenceDto": {
+        "type": "object",
+        "properties": {
+          "gx:evidenceURL": {
+            "type": "string"
+          },
+          "gx:executionDate": {
+            "type": "string"
+          },
+          "gx:evidenceOf": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "gx:evidenceURL",
+          "gx:executionDate",
+          "gx:evidenceOf"
+        ]
+      },
+      "VerifiableCredentialDto": {
+        "type": "object",
+        "properties": {
+          "@context": {
+            "type": "object"
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "issuer": {
+            "type": "string"
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validUntil": {
+            "type": "string"
+          },
+          "credentialSubject": {
+            "$ref": "#/components/schemas/CredentialSubjectDto"
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/EvidenceDto"
+          }
+        },
+        "required": [
+          "@context",
+          "type",
+          "id",
+          "name",
+          "description",
+          "issuer",
+          "validFrom",
+          "validUntil",
+          "credentialSubject",
+          "evidence"
+        ]
+      }
+    }
+  }
+}

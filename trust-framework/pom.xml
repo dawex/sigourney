@@ -156,7 +156,7 @@
 							<gitRootSearch>true</gitRootSearch>
 							<jreleaser>
 								<project>
-									<copyright>2023 Dawex</copyright>
+									<copyright>2025 Dawex</copyright>
 								</project>
 								<signing>
 									<active>ALWAYS</active>

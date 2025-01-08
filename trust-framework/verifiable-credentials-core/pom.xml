@@ -153,15 +153,27 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>generate-notary-client</id>
+						<id>generate-notary-client-v1</id>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/openapi/gaiax-notary-service.json</inputSpec>
-							<apiPackage>com.dawex.sigourney.notary.client</apiPackage>
-							<modelPackage>com.dawex.sigourney.notary.client.dto</modelPackage>
-							<invokerPackage>com.dawex.sigourney.notary.client</invokerPackage>
+							<inputSpec>${project.basedir}/src/main/resources/openapi/gaiax-notary-service-v1.json</inputSpec>
+							<apiPackage>com.dawex.sigourney.notary.client.v1</apiPackage>
+							<modelPackage>com.dawex.sigourney.notary.client.v1.dto</modelPackage>
+							<invokerPackage>com.dawex.sigourney.notary.client.v1</invokerPackage>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-notary-client-v2</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/openapi/gaiax-notary-service-v2.json</inputSpec>
+							<apiPackage>com.dawex.sigourney.notary.client.v2</apiPackage>
+							<modelPackage>com.dawex.sigourney.notary.client.v2.dto</modelPackage>
+							<invokerPackage>com.dawex.sigourney.notary.client.v2</invokerPackage>
 						</configuration>
 					</execution>
 				</executions>
