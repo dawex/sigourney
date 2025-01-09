@@ -1,4 +1,4 @@
-package com.dawex.sigourney.trustframework.vc.core;
+package com.dawex.sigourney.trustframework.vc.core.vc.signature.model;
 
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdProperty;
 

@@ -5,12 +5,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.FIELD})
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JsonLdProperty {
-	String value() default "";
+	String value();
 
 	String namespace() default "";
+
+	String type() default "";
 
 	String formatName() default "";
 

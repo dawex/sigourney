@@ -13,7 +13,7 @@ public class JsonLdContextsSerializer extends JsonSerializer<JsonLdContexts> {
 
 	private static final String CONTEXT_BASE = "@base";
 
-	private Supplier<String> baseIri;
+	private final Supplier<String> baseIri;
 
 	public JsonLdContextsSerializer(Supplier<String> baseIri) {
 		this.baseIri = baseIri;
@@ -22,17 +22,24 @@ public class JsonLdContextsSerializer extends JsonSerializer<JsonLdContexts> {
 	@Override
 	public void serialize(JsonLdContexts jsonLdContexts, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
 			throws IOException {
-		jsonGenerator.writeStartArray();
-		writeEmbeddedContexts(jsonLdContexts, jsonGenerator);
+		final boolean hasEmbeddedContexts =
+				(jsonLdContexts.addBaseContext() && baseIri != null) || jsonLdContexts.embeddedContexts().length > 0;
+		final boolean hasMultipleContexts = ((hasEmbeddedContexts ? 1 : 0) + jsonLdContexts.referencedContexts().length) > 1;
+
+		if (hasMultipleContexts) {
+			jsonGenerator.writeStartArray();
+		}
 		writeReferencedContexts(jsonLdContexts, jsonGenerator);
-		jsonGenerator.writeEndArray();
+
+		if (hasEmbeddedContexts) {
+			writeEmbeddedContexts(jsonLdContexts, jsonGenerator);
+		}
+		if (hasMultipleContexts) {
+			jsonGenerator.writeEndArray();
+		}
 	}
 
 	private void writeEmbeddedContexts(JsonLdContexts jsonLdContexts, JsonGenerator jsonGenerator) throws IOException {
-		if ((!jsonLdContexts.addBaseContext() || baseIri == null) && jsonLdContexts.embeddedContexts().length == 0) {
-			return;
-		}
-
 		jsonGenerator.writeStartObject();
 		if (jsonLdContexts.addBaseContext() && baseIri != null) {
 			jsonGenerator.writeStringField(CONTEXT_BASE, baseIri.get());

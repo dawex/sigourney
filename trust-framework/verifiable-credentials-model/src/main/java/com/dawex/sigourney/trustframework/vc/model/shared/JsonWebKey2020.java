@@ -7,9 +7,9 @@ import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdType;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.SECURITY_JWS_2020;
+import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.LDS_JWS_2020;
 
-@JsonLdContexts(referencedContexts = SECURITY_JWS_2020)
+@JsonLdContexts(referencedContexts = LDS_JWS_2020)
 @JsonLdType("JsonWebKey2020")
 public class JsonWebKey2020 implements VerificationMethod {
 

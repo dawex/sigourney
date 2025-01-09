@@ -1,6 +1,7 @@
-package com.dawex.sigourney.trustframework.vc.core;
+package com.dawex.sigourney.trustframework.vc.core.vc.signature;
 
 import com.dawex.sigourney.trustframework.vc.core.jose.JsonWebSignatureUtils;
+import com.dawex.sigourney.trustframework.vc.core.vc.signature.model.Proof;
 import com.nimbusds.jose.jwk.JWK;
 
 import java.time.ZoneOffset;

@@ -3,21 +3,28 @@ package com.dawex.sigourney.trustframework.vc.core.integration.v1;
 import com.dawex.sigourney.notary.client.v1.ApiException;
 import com.dawex.sigourney.notary.client.v1.RegistrationNumberVcApi;
 import com.dawex.sigourney.notary.client.v1.dto.CheckRegistrationNumberVCRequest;
+import com.dawex.sigourney.trustframework.vc.core.integration.NotaryServiceException;
 import com.dawex.sigourney.trustframework.vc.core.integration.model.RegistrationNumberType;
 import com.dawex.sigourney.trustframework.vc.core.integration.model.RegistrationNumberVC;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.ArgumentCaptor;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class NotaryServiceV1Test {
@@ -59,6 +66,38 @@ class NotaryServiceV1Test {
 		assertThat(actualRequest.getGxEORI()).isNull();
 		assertThat(actualRequest.getGxLeiCode()).isNull();
 		assertThat(actualRequest.getGxVatID()).isEqualTo(REGISTRATION_NUMBER);
+	}
+
+	@ParameterizedTest
+	@NullAndEmptySource
+	void withNoRegistrationNumberShouldNotGetRegistrationNumberVC(String registrationNumber) {
+		assertThatThrownBy(
+				() -> service.getRegistrationNumberVC(registrationNumber, RegistrationNumberType.EORI,
+						"did:web:dawex.com:registrationNumber"))
+				.isInstanceOf(NotaryServiceException.class);
+
+		verifyNoInteractions(registrationNumberVcApi);
+	}
+
+	@ParameterizedTest
+	@EnumSource(value = RegistrationNumberType.class, names = {"EUID", "TAX_ID"})
+	@NullSource
+	void withInvalidRegistrationTypeShouldNotGetRegistrationNumberVC(RegistrationNumberType registrationNumberType) {
+		assertThatThrownBy(
+				() -> service.getRegistrationNumberVC(REGISTRATION_NUMBER, registrationNumberType, "did:web:dawex.com:registrationNumber"))
+				.isInstanceOf(NotaryServiceException.class);
+
+		verifyNoInteractions(registrationNumberVcApi);
+	}
+
+	@ParameterizedTest
+	@NullAndEmptySource
+	void withNoVcIdShouldNotGetRegistrationNumberVC(String vcId) {
+		assertThatThrownBy(
+				() -> service.getRegistrationNumberVC(REGISTRATION_NUMBER, RegistrationNumberType.EORI, vcId))
+				.isInstanceOf(NotaryServiceException.class);
+
+		verifyNoInteractions(registrationNumberVcApi);
 	}
 
 	private CheckRegistrationNumberVCRequest shouldGetRegistrationNumberVC(RegistrationNumberType registrationNumberType)

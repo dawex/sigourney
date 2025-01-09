@@ -1,4 +1,4 @@
-package com.dawex.sigourney.trustframework.vc.model.shared;
+package com.dawex.sigourney.trustframework.vc.core.vc.v2.model;
 
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdContexts;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdProperty;
@@ -7,20 +7,20 @@ import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdType;
 import java.util.Collection;
 import java.util.Objects;
 
-import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.VERIFIABLE_CREDENTIALS;
+import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.VERIFIABLE_CREDENTIALS_V2;
 
-@JsonLdContexts(referencedContexts = {VERIFIABLE_CREDENTIALS})
+@JsonLdContexts(referencedContexts = {VERIFIABLE_CREDENTIALS_V2})
 @JsonLdType("VerifiablePresentation")
 public class VerifiablePresentation {
 
 	@JsonLdProperty(value = "verifiableCredential")
-	private final Collection<Object> verifiableCredential;
+	private final Collection<? extends VerifiableCredential> verifiableCredential;
 
-	public VerifiablePresentation(Collection<Object> verifiableCredential) {
+	public VerifiablePresentation(Collection<? extends VerifiableCredential> verifiableCredential) {
 		this.verifiableCredential = verifiableCredential;
 	}
 
-	public Collection<Object> getVerifiableCredential() {
+	public Collection<? extends VerifiableCredential> getVerifiableCredential() {
 		return verifiableCredential;
 	}
 
@@ -53,12 +53,12 @@ public class VerifiablePresentation {
 	}
 
 	public static class VerifiablePresentationBuilder {
-		private Collection<Object> verifiableCredential;
+		private Collection<? extends VerifiableCredential> verifiableCredential;
 
 		VerifiablePresentationBuilder() {
 		}
 
-		public VerifiablePresentationBuilder verifiableCredential(Collection<Object> verifiableCredential) {
+		public VerifiablePresentationBuilder verifiableCredential(Collection<? extends VerifiableCredential> verifiableCredential) {
 			this.verifiableCredential = verifiableCredential;
 			return this;
 		}

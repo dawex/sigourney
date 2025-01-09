@@ -8,9 +8,9 @@ import com.dawex.sigourney.trustframework.vc.model.v2210.serialization.Format;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
-import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.GAIAX_TRUST_FRAMEWORK;
+import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.GAIAX_TRUST_FRAMEWORK_V1;
 import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.SECURITY_JWS_2020;
-import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.VERIFIABLE_CREDENTIALS;
+import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.VERIFIABLE_CREDENTIALS_V1;
 
 /**
  * @see <a href="https://www.w3.org/2018/credentials/v1">Verifiable Credential Schema</a>
@@ -18,9 +18,9 @@ import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.
 @JsonLdContexts(
 		addBaseContext = true,
 		referencedContexts = {
-				VERIFIABLE_CREDENTIALS,
+				VERIFIABLE_CREDENTIALS_V1,
 				SECURITY_JWS_2020,
-				GAIAX_TRUST_FRAMEWORK
+				GAIAX_TRUST_FRAMEWORK_V1
 		})
 @JsonLdType("VerifiableCredential")
 public class TermsAndConditionsVerifiableCredential {
@@ -35,14 +35,14 @@ public class TermsAndConditionsVerifiableCredential {
 	private final ZonedDateTime issuanceDate;
 
 	@JsonLdProperty(value = "credentialSubject")
-	private final TermsAndConditionsCredentialSubject termsAndConditionsCredentialSubject;
+	private final TermsAndConditionsCredentialSubject credentialSubject;
 
 	public TermsAndConditionsVerifiableCredential(String id, String issuer, ZonedDateTime issuanceDate,
-			TermsAndConditionsCredentialSubject termsAndConditionsCredentialSubject) {
+			TermsAndConditionsCredentialSubject credentialSubject) {
 		this.id = id;
 		this.issuer = issuer;
 		this.issuanceDate = issuanceDate;
-		this.termsAndConditionsCredentialSubject = termsAndConditionsCredentialSubject;
+		this.credentialSubject = credentialSubject;
 	}
 
 	public static TermsAndConditionsVerifiableCredentialBuilder builder() {
@@ -72,12 +72,12 @@ public class TermsAndConditionsVerifiableCredential {
 		TermsAndConditionsVerifiableCredential that = (TermsAndConditionsVerifiableCredential) o;
 		return Objects.equals(id, that.id) && Objects.equals(issuer, that.issuer) &&
 				Objects.equals(issuanceDate, that.issuanceDate) &&
-				Objects.equals(termsAndConditionsCredentialSubject, that.termsAndConditionsCredentialSubject);
+				Objects.equals(credentialSubject, that.credentialSubject);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, issuer, issuanceDate, termsAndConditionsCredentialSubject);
+		return Objects.hash(id, issuer, issuanceDate, credentialSubject);
 	}
 
 	@Override
@@ -86,12 +86,12 @@ public class TermsAndConditionsVerifiableCredential {
 				"id='" + id + '\'' +
 				", issuer='" + issuer + '\'' +
 				", issuanceDate=" + issuanceDate +
-				", termsAndConditionsCredentialSubject=" + termsAndConditionsCredentialSubject +
+				", termsAndConditionsCredentialSubject=" + credentialSubject +
 				'}';
 	}
 
-	public TermsAndConditionsCredentialSubject getTermsAndConditionsCredentialSubject() {
-		return termsAndConditionsCredentialSubject;
+	public TermsAndConditionsCredentialSubject getCredentialSubject() {
+		return credentialSubject;
 	}
 
 	public static class TermsAndConditionsVerifiableCredentialBuilder {

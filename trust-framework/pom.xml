@@ -27,6 +27,7 @@
 		<maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
 
 		<assert4j.version>3.27.3</assert4j.version>
+		<json-path.version>2.9.0</json-path.version>
 		<junit.version>5.11.4</junit.version>
 		<mockito.version>5.15.2</mockito.version>
 	</properties>

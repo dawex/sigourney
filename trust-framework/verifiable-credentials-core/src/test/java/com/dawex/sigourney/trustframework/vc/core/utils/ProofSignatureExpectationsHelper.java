@@ -1,4 +1,4 @@
-package com.dawex.sigourney.trustframework.vc.model.utils;
+package com.dawex.sigourney.trustframework.vc.core.utils;
 
 import com.dawex.sigourney.trustframework.vc.core.jose.JsonWebSignatureUtils;
 import com.jayway.jsonpath.DocumentContext;
@@ -7,6 +7,7 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.util.X509CertUtils;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,8 +22,8 @@ public class ProofSignatureExpectationsHelper {
 		this.certificates = certificates;
 	}
 
-	public void assertSignatureIsValid(String content) {
-		final DocumentContext documentContext = JsonPath.parse(content);
+	public void assertSignatureIsValid(Map<?, ?> proof) {
+		final DocumentContext documentContext = JsonPath.parse(proof);
 		final String jws = documentContext.read("$['proof']['jws']", String.class);
 		// get JSON-LD without the proof
 		documentContext.delete("$['proof']");

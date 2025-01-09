@@ -1,6 +1,7 @@
 package com.dawex.sigourney.trustframework.vc.core.jsonld.serialization;
 
 import com.dawex.sigourney.trustframework.vc.core.jsonld.CompositeValue;
+import com.dawex.sigourney.trustframework.vc.core.jsonld.JsonLdValueObject;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdContexts;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdProperty;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdType;
@@ -16,13 +17,20 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class JsonLdSerializer<T> extends JsonSerializer<T> {
 
@@ -68,14 +76,8 @@ public class JsonLdSerializer<T> extends JsonSerializer<T> {
 		final Optional<JsonLdType> jsonLdTypeOpt = findAnnotation(targetClass, JsonLdType.class);
 		if (jsonLdTypeOpt.isPresent()) {
 			final JsonLdType jsonLdType = jsonLdTypeOpt.get();
-
 			// write type
-			jsonGenerator.writeFieldName(FIELD_TYPE);
-			if (jsonLdType.value().length == 1) {
-				jsonGenerator.writeString(jsonLdType.value()[0]);
-			} else {
-				jsonGenerator.writeArray(jsonLdType.value(), 0, jsonLdType.value().length);
-			}
+			jsonGenerator.writeObjectField(FIELD_TYPE, jsonLdType);
 		}
 	}
 
@@ -101,22 +103,32 @@ public class JsonLdSerializer<T> extends JsonSerializer<T> {
 		// write parent class fields
 		writeJsonLdProperties(value, targetClass.getSuperclass(), jsonGenerator);
 
-		// get all fields annotated with @JsonLdProperty
-		Arrays.stream(targetClass.getDeclaredFields())
-				.filter(field -> field.isAnnotationPresent(JsonLdProperty.class))
-				.map(field -> new FieldContext(field.getAnnotation(JsonLdProperty.class), getReadMethod(targetClass, field)))
+		// fields and methods annotated with @JsonLdProperty
+		// only build from getter for record, so @JsonLdProperty are not processed twice
+		(targetClass.isRecord()
+				? getFieldContextsFromDeclaredGetters(targetClass)
+				: Stream.concat(getFieldContextsFromDeclaredFields(targetClass), getFieldContextsFromDeclaredGetters(targetClass)))
+
 				.filter(FieldContext::isValid)
 				.forEach(context -> writeJsonLdProperty(value, context.jsonLdProperty, context.readMethod(), jsonGenerator));
 	}
 
+	private static Stream<FieldContext> getFieldContextsFromDeclaredFields(Class<?> targetClass) {
+		return Arrays.stream(targetClass.getDeclaredFields())
+				.filter(field -> field.isAnnotationPresent(JsonLdProperty.class))
+				.map(field -> new FieldContext(field.getAnnotation(JsonLdProperty.class), getReadMethod(targetClass, field)));
+	}
+
+	private static Stream<FieldContext> getFieldContextsFromDeclaredGetters(Class<?> targetClass) {
+		return Arrays.stream(targetClass.getDeclaredMethods())
+				.filter(method -> method.isAnnotationPresent(JsonLdProperty.class))
+				.map(method -> new FieldContext(method.getAnnotation(JsonLdProperty.class), method));
+	}
+
 	private static Method getReadMethod(Class<?> targetClass, Field field) {
 		try {
-			if (targetClass.isRecord()) {
-				return targetClass.getDeclaredMethod(field.getName());
-			} else {
-				return new PropertyDescriptor(field.getName(), targetClass, field.getName(), null).getReadMethod();
-			}
-		} catch (NoSuchMethodException | IntrospectionException e) {
+			return new PropertyDescriptor(field.getName(), targetClass, field.getName(), null).getReadMethod();
+		} catch (IntrospectionException e) {
 			throw new JsonLdSerializationException(e);
 		}
 	}
@@ -124,14 +136,24 @@ public class JsonLdSerializer<T> extends JsonSerializer<T> {
 	private void writeJsonLdProperty(Object obj, JsonLdProperty jsonLdProperty, Method getterMethod, JsonGenerator jsonGenerator) {
 		try {
 			final Object value = getterMethod.invoke(obj);
-
-			if (value == null && !jsonLdProperty.mandatory()) {
+			if (value == null) {
+				writeJsonLdNullField(jsonLdProperty, getterMethod, jsonGenerator);
 				return;
 			}
 			jsonGenerator.writeObjectField(getJsonFieldName(jsonLdProperty), getJsonFieldValue(jsonLdProperty, value));
 
 		} catch (IllegalAccessException | InvocationTargetException | IOException e) {
 			throw new JsonLdSerializationException(e);
+		}
+	}
+
+	private void writeJsonLdNullField(JsonLdProperty jsonLdProperty, Method getterMethod, JsonGenerator jsonGenerator) throws IOException {
+		if (jsonLdProperty.mandatory()) {
+			if (Collection.class.isAssignableFrom(getterMethod.getReturnType())) {
+				jsonGenerator.writeObjectField(getJsonFieldName(jsonLdProperty), List.of());
+			} else {
+				jsonGenerator.writeNullField(getJsonFieldName(jsonLdProperty));
+			}
 		}
 	}
 
@@ -148,20 +170,49 @@ public class JsonLdSerializer<T> extends JsonSerializer<T> {
 		if (value instanceof Collection<?> valueColl) {
 			return valueColl.stream().map(v -> getJsonFieldValue(jsonLdProperty, v)).toList();
 		}
+
+		final Object jsonFieldValue;
+		if (value instanceof JsonLdValueObject<?> valueObject) {
+			return new JsonLdValueObject<>(valueObject.type(),
+					getFormattedFieldValue(jsonLdProperty.formatName(), valueObject.value()));
+		} else {
+			jsonFieldValue = getFormattedFieldValue(jsonLdProperty.formatName(), value);
+			// wrap with type if any
+			if (jsonLdProperty.type() != null && !jsonLdProperty.type().isEmpty()) {
+				return new JsonLdValueObject<>(jsonLdProperty.type(), jsonFieldValue);
+			}
+			return jsonFieldValue;
+		}
+	}
+
+	private Object getFormattedFieldValue(String formatName, Object value) {
+		final Object jsonFieldValue;
 		if (value instanceof String valueString) {
-			return getFormat(jsonLdProperty.formatName())
+			jsonFieldValue = getFormat(formatName)
 					.map(format -> format.formatted(valueString))
 					.orElse(valueString);
-		}
-		if (value instanceof CompositeValue compositeValue) {
-			return getFormat(jsonLdProperty.formatName())
+		} else if (value instanceof CompositeValue compositeValue) {
+			jsonFieldValue = getFormat(formatName)
 					.map(format -> (Object) format.formatted(compositeValue.getValues()))
 					.orElse(Arrays.stream(compositeValue.getValues()).map(String::valueOf).collect(Collectors.joining(",")));
+		} else if (value instanceof Enum<?>) {
+			jsonFieldValue = value.toString();
+		} else if (value instanceof ZonedDateTime valueDateTime) {
+			jsonFieldValue = valueDateTime.truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+		} else if (value instanceof OffsetDateTime valueDateTime) {
+			jsonFieldValue = valueDateTime.truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+		} else if (value instanceof Instant valueInstant) {
+			jsonFieldValue = valueInstant.atZone(ZoneId.of("UTC")).truncatedTo(ChronoUnit.SECONDS)
+					.format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+		} else if (value instanceof LocalDateTime valueDateTime) {
+			jsonFieldValue = valueDateTime.atZone(ZoneId.of("UTC")).truncatedTo(ChronoUnit.SECONDS)
+					.format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+		} else if (value instanceof LocalDate valueDate) {
+			jsonFieldValue = valueDate.atStartOfDay().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_DATE);
+		} else {
+			jsonFieldValue = value;
 		}
-		if (value instanceof ZonedDateTime valueDateTime) {
-			return valueDateTime.truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
-		}
-		return value;
+		return jsonFieldValue;
 	}
 
 	private Optional<String> getFormat(String formatName) {

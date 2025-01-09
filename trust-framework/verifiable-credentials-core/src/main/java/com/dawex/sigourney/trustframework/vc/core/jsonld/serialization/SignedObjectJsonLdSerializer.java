@@ -1,6 +1,6 @@
 package com.dawex.sigourney.trustframework.vc.core.jsonld.serialization;
 
-import com.dawex.sigourney.trustframework.vc.core.SignedObject;
+import com.dawex.sigourney.trustframework.vc.core.vc.signature.model.SignedObject;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 

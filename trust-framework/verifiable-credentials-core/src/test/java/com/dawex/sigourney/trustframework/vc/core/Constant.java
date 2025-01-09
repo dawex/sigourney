@@ -1,5 +1,8 @@
 package com.dawex.sigourney.trustframework.vc.core;
 
+import com.dawex.sigourney.trustframework.vc.core.jose.JwkSetUtils;
+import com.nimbusds.jose.jwk.JWK;
+
 public class Constant {
 
 	public static final String CERTIFICATE = """
@@ -30,36 +33,46 @@ public class Constant {
 			}""";
 
 	public static final String JSON_LD = """
-			{
-			  "@context" : {
-			    "@base" : "https://dawex.com",
-			    "sd" : "https://www.w3.org/2018/credentials/v1",
-			    "gax-participant" : "https://w3id.org/gaia-x/participant#"
-			  },
-			  "@type" : [ "VerifiableCredential", "LegalPerson" ],
-			  "@id" : "./api/secure/participant/organisations/62b573deb33e417edcb34-id/verifiableCredential",
-			  "sd:issuer" : "./organisations/62b573deb33e417ed-issuer",
-			  "sd:issuanceDate" : "2022-07-28T15:16:01Z",
-			  "sd:credentialSubject" : {
-			    "@id" : "./organisations/62b573deb33e417e-company",
-			    "gax-participant:name" : "Mercat de la Boqueria",
-			    "gax-participant:registrationNumber" : "AB-1234-YZ",
-			    "gax-participant:headquarterAddress" : {
-			      "gax-participant:street-address" : "La Rambla, 91",
-			      "gax-participant:postal-code" : "08001",
-			      "gax-participant:region" : "Cataluña",
-			      "gax-participant:locality" : "Barcelona",
-			      "gax-participant:country-name" : "ESP"
+			  {
+			    "@context": [
+			    {
+			      "@base": "https://dwx-13071.platform.dev.corp.dawex.net"
 			    },
-			    "gax-participant:legalAddress" : {
-			      "gax-participant:street-address" : "7 rue Grenette",
-			      "gax-participant:postal-code" : "74000",
-			      "gax-participant:region" : "Savoie",
-			      "gax-participant:locality" : "Annecy",
-			      "gax-participant:country-name" : "FRA"
+			      "https://www.w3.org/2018/credentials/v1",
+			      "https://w3id.org/security/suites/jws-2020/v1",
+			      "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
+			  ],
+			  "type" : "VerifiableCredential",
+			  "@id" : "./api/secure/participant/organisations/62b573deb33e417edcb34-id/verifiableCredential",
+			  "issuer" : "./organisations/62b573deb33e417ed-issuer",
+			  "issuanceDate" : "2022-07-28T15:16:01Z",
+			  "credentialSubject" : {
+			    "type": "gx:LegalParticipant",
+			    "id" : "./organisations/62b573deb33e417e-company",
+			    "gx:name" : "Mercat de la Boqueria",
+			    "gx:registrationNumber" : "AB-1234-YZ",
+			    "gx:headquarterAddress" : {
+			      "gx:street-address" : "La Rambla, 91",
+			      "gx:postal-code" : "08001",
+			      "gx:region" : "Cataluña",
+			      "gx:locality" : "Barcelona",
+			      "gx:country-name" : "ESP"
+			    },
+			    "gx:legalAddress" : {
+			      "gx:street-address" : "7 rue Grenette",
+			      "gx:postal-code" : "74000",
+			      "gx:region" : "Savoie",
+			      "gx:locality" : "Annecy",
+			      "gx:country-name" : "FRA"
 			    }
 			  }
 			}""";
+
+	public static final JwkSetUtils.CreatedKeys CREATED_KEYS = JwkSetUtils.createKeysWithSelfSignedCertificate(null, "Test", 12);
+
+	public static final JWK JWK = CREATED_KEYS.jwkSet().getKeys().stream().findFirst().orElseThrow();
+
+	public static final String DID_ISSUER = "did:web:dawex.com";
 
 	private Constant() {
 		// no instance allowed
