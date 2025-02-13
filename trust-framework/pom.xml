@@ -22,12 +22,13 @@
 
 		<jreleaser-maven-plugin.version>1.11.0</jreleaser-maven-plugin.version>
 		<maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
+		<maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
 		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
 		<maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
 
-		<assert4j.version>3.25.3</assert4j.version>
-		<junit.version>5.10.2</junit.version>
-		<mockito.version>5.11.0</mockito.version>
+		<assert4j.version>3.27.3</assert4j.version>
+		<junit.version>5.11.4</junit.version>
+		<mockito.version>5.15.2</mockito.version>
 	</properties>
 
 	<modules>
@@ -123,7 +124,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-jar-plugin</artifactId>
-						<version>3.3.0</version>
+						<version>${maven-jar-plugin.version}</version>
 						<executions>
 							<execution>
 								<id>javadoc-jar</id>
