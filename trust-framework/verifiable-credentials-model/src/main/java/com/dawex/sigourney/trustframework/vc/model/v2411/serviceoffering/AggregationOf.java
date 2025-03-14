@@ -4,16 +4,16 @@ import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdProper
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdType;
 import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.LinkTo;
 
-import static com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format.SERVICE_OFFERING_PROVIDED_BY;
+import static com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format.DATA_PRODUCT_AGGREGATION_OF;
 
-@JsonLdType("gx:LegalPerson")
-public class ProvidedBy extends LinkTo {
+@JsonLdType("gx:DataSet")
+public class AggregationOf extends LinkTo {
 
-	public ProvidedBy(String id) {
+	public AggregationOf(String id) {
 		super(id);
 	}
 
-	@JsonLdProperty(value = "id", formatName = SERVICE_OFFERING_PROVIDED_BY)
+	@JsonLdProperty(value = "id", formatName = DATA_PRODUCT_AGGREGATION_OF)
 	@Override
 	public String getId() {
 		return super.getId();

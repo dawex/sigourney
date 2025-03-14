@@ -4,12 +4,13 @@ import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdProper
 import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.CredentialSubject;
 import com.dawex.sigourney.trustframework.vc.model.v2411.Namespace;
 import com.dawex.sigourney.trustframework.vc.model.v2411.common.GaiaxTermsAndConditions;
-import com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format;
 
 import java.util.Objects;
 
+import static com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format.ISSUER_CREDENTIAL_SUBJECT;
+
 public class IssuerCredentialSubject implements CredentialSubject {
-	@JsonLdProperty(value = "id", formatName = Format.ISSUER_CREDENTIAL_SUBJECT)
+	@JsonLdProperty(value = "id", formatName = ISSUER_CREDENTIAL_SUBJECT)
 	private final String id;
 
 	@JsonLdProperty(value = "gaiaxTermsAndConditions", namespace = Namespace.GAIAX_NS)

@@ -211,7 +211,7 @@ final var organisationVp = VerifiablePresentation.builder()
 final var serializedVp = objectMapper.writeValueAsString(organisationVp);
 ```
 
-### Generate a verifiable credential for Gaia-X v1 release (Loire 24.11)
+### Generate a verifiable credential for Gaia-X v2 release (Loire 24.11)
 
 With the configuration defined above, we can now serialize verifiable credential POJOs in JSON-LD, and then secure them with JOSE (JSON Object Signing and Encryption).
 

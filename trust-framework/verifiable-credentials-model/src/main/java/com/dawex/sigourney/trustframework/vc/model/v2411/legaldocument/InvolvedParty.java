@@ -4,7 +4,7 @@ import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdProper
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdType;
 import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.LinkTo;
 
-import static com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format.SERVICE_OFFERING_INVOLVED_PARTIES;
+import static com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format.LEGAL_DOCUMENT_INVOLVED_PARTIES;
 
 @JsonLdType("gx:LegalPerson")
 public class InvolvedParty extends LinkTo {
@@ -13,7 +13,7 @@ public class InvolvedParty extends LinkTo {
 		super(id);
 	}
 
-	@JsonLdProperty(value = "id", formatName = SERVICE_OFFERING_INVOLVED_PARTIES)
+	@JsonLdProperty(value = "id", formatName = LEGAL_DOCUMENT_INVOLVED_PARTIES)
 	@Override
 	public String getId() {
 		return super.getId();

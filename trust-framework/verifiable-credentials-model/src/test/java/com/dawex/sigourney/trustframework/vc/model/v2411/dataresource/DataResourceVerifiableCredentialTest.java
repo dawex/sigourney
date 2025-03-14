@@ -1,6 +1,7 @@
 package com.dawex.sigourney.trustframework.vc.model.v2411.dataresource;
 
 import com.dawex.sigourney.trustframework.vc.model.shared.DefaultFormatProvider;
+import com.dawex.sigourney.trustframework.vc.model.v2411.common.ExposedThrough;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serialization.JacksonModuleFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -85,9 +86,9 @@ class DataResourceVerifiableCredentialTest {
 
 		assertThatJsonStringValue("$['credentialSubject']['id']", serializedVc)
 				.isEqualTo("./dataResource/62b573deb33e417edcb34-dataResource/cs");
-		assertThatJsonStringValue("$['credentialSubject']['httpsschema:name']", serializedVc)
+		assertThatJsonStringValue("$['credentialSubject']['schema:name']", serializedVc)
 				.isEqualTo("62b573deb33e417edcb34-name");
-		assertThatJsonStringValue("$['credentialSubject']['httpsschema:description']", serializedVc)
+		assertThatJsonStringValue("$['credentialSubject']['schema:description']", serializedVc)
 				.isEqualTo("62b573deb33e417edcb34-description");
 		assertThatJsonListValue("$['credentialSubject']['gx:resourcePolicy']", serializedVc)
 				.hasSize(1)

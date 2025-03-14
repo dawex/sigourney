@@ -1,19 +1,17 @@
 package com.dawex.sigourney.trustframework.vc.model.v2411.legalperson;
 
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdProperty;
-import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.CredentialSubject;
 import com.dawex.sigourney.trustframework.vc.model.v2411.Namespace;
 import com.dawex.sigourney.trustframework.vc.model.v2411.common.Address;
-import com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format;
+import com.dawex.sigourney.trustframework.vc.model.v2411.common.GaiaxCredentialSubject;
 
 import java.util.Objects;
 
-public class LegalPersonCredentialSubject implements CredentialSubject {
-	@JsonLdProperty(value = "id", formatName = Format.LEGAL_PERSON_CREDENTIAL_SUBJECT)
-	private final String id;
+import static com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format.LEGAL_PERSON_CREDENTIAL_SUBJECT;
 
-	@JsonLdProperty(value = "name", namespace = Namespace.SCHEMA_NS, mandatory = true)
-	private final String name;
+public class LegalPersonCredentialSubject extends GaiaxCredentialSubject {
+	@JsonLdProperty(value = "id", formatName = LEGAL_PERSON_CREDENTIAL_SUBJECT)
+	private final String id;
 
 	@JsonLdProperty(value = "registrationNumber", namespace = Namespace.GAIAX_NS, mandatory = true)
 	private final RegistrationNumber registrationNumber;
@@ -24,25 +22,26 @@ public class LegalPersonCredentialSubject implements CredentialSubject {
 	@JsonLdProperty(value = "legalAddress", namespace = Namespace.GAIAX_NS, mandatory = true)
 	private final Address legalAddress;
 
-	public LegalPersonCredentialSubject(String id, String name, RegistrationNumber registrationNumber,
+	public LegalPersonCredentialSubject(String id, String name, String description, RegistrationNumber registrationNumber,
 			Address headquartersAddress, Address legalAddress) {
+		super(name, description);
 		this.id = id;
-		this.name = name;
 		this.registrationNumber = registrationNumber;
 		this.headquartersAddress = headquartersAddress;
 		this.legalAddress = legalAddress;
 	}
 
-	public static LegalPersonCredentialSubjectBuilder builder() {
-		return new LegalPersonCredentialSubjectBuilder();
+	public static LegalPersonCredentialSubjectBuilder<? extends LegalPersonCredentialSubject> builder() {
+		return new LegalPersonCredentialSubjectBuilder<>() {
+			@Override
+			public LegalPersonCredentialSubject build() {
+				return new LegalPersonCredentialSubject(id, name, description, registrationNumber, headquartersAddress, legalAddress);
+			}
+		};
 	}
 
 	public String getId() {
 		return id;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public RegistrationNumber getRegistrationNumber() {
@@ -68,6 +67,7 @@ public class LegalPersonCredentialSubject implements CredentialSubject {
 		var that = (LegalPersonCredentialSubject) obj;
 		return Objects.equals(this.id, that.id) &&
 				Objects.equals(this.name, that.name) &&
+				Objects.equals(this.description, that.description) &&
 				Objects.equals(this.registrationNumber, that.registrationNumber) &&
 				Objects.equals(this.headquartersAddress, that.headquartersAddress) &&
 				Objects.equals(this.legalAddress, that.legalAddress);
@@ -83,59 +83,66 @@ public class LegalPersonCredentialSubject implements CredentialSubject {
 		return "LegalPersonCredentialSubject[" +
 				"id=" + id + ", " +
 				"name=" + name + ", " +
+				"description=" + description + ", " +
 				"registrationNumber=" + registrationNumber + ", " +
 				"headquartersAddress=" + headquartersAddress + ", " +
 				"legalAddress=" + legalAddress + ']';
 	}
 
-	public static class LegalPersonCredentialSubjectBuilder {
-		private String id;
+	public abstract static class LegalPersonCredentialSubjectBuilder<T extends LegalPersonCredentialSubject> {
+		protected String id;
 
-		private String name;
+		protected String name;
 
-		private RegistrationNumber registrationNumber;
+		protected String description;
 
-		private Address headquartersAddress;
+		protected RegistrationNumber registrationNumber;
 
-		private Address legalAddress;
+		protected Address headquartersAddress;
+
+		protected Address legalAddress;
 
 		LegalPersonCredentialSubjectBuilder() {
 		}
 
-		public LegalPersonCredentialSubjectBuilder id(String id) {
+		public LegalPersonCredentialSubjectBuilder<T> id(String id) {
 			this.id = id;
 			return this;
 		}
 
-		public LegalPersonCredentialSubjectBuilder name(String name) {
+		public LegalPersonCredentialSubjectBuilder<T> name(String name) {
 			this.name = name;
 			return this;
 		}
 
-		public LegalPersonCredentialSubjectBuilder registrationNumber(RegistrationNumber registrationNumber) {
+		public LegalPersonCredentialSubjectBuilder<T> description(String description) {
+			this.description = description;
+			return this;
+		}
+
+		public LegalPersonCredentialSubjectBuilder<T> registrationNumber(RegistrationNumber registrationNumber) {
 			this.registrationNumber = registrationNumber;
 			return this;
 		}
 
-		public LegalPersonCredentialSubjectBuilder headquartersAddress(Address headquartersAddress) {
+		public LegalPersonCredentialSubjectBuilder<T> headquartersAddress(Address headquartersAddress) {
 			this.headquartersAddress = headquartersAddress;
 			return this;
 		}
 
-		public LegalPersonCredentialSubjectBuilder legalAddress(Address legalAddress) {
+		public LegalPersonCredentialSubjectBuilder<T> legalAddress(Address legalAddress) {
 			this.legalAddress = legalAddress;
 			return this;
 		}
 
-		public LegalPersonCredentialSubject build() {
-			return new LegalPersonCredentialSubject(id, name, registrationNumber, headquartersAddress, legalAddress);
-		}
+		public abstract T build();
 
 		@Override
 		public String toString() {
 			return "LegalPersonCredentialSubjectBuilder{" +
 					"id='" + id + '\'' +
 					", name='" + name + '\'' +
+					", description='" + description + '\'' +
 					", registrationNumber='" + registrationNumber + '\'' +
 					", headquartersAddress=" + headquartersAddress +
 					", legalAddress=" + legalAddress +

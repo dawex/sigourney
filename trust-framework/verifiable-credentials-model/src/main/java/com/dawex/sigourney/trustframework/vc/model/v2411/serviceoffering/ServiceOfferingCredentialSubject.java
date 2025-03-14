@@ -1,64 +1,57 @@
 package com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering;
 
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdProperty;
-import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.CredentialSubject;
 import com.dawex.sigourney.trustframework.vc.model.v2411.common.AccessUsagePolicy;
 import com.dawex.sigourney.trustframework.vc.model.v2411.common.ContactInformation;
+import com.dawex.sigourney.trustframework.vc.model.v2411.common.GaiaxCredentialSubject;
 import com.dawex.sigourney.trustframework.vc.model.v2411.common.TermsAndConditions;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.legaldocument.LegalDocument;
+import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.providedby.ProvidedBy;
 
 import java.util.Collection;
 import java.util.Objects;
 
 import static com.dawex.sigourney.trustframework.vc.model.v2411.Namespace.GAIAX_NS;
-import static com.dawex.sigourney.trustframework.vc.model.v2411.Namespace.SCHEMA_NS;
 import static com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format.SERVICE_OFFERING_CREDENTIAL_SUBJECT;
 
-public class ServiceOfferingCredentialSubject implements CredentialSubject {
+public class ServiceOfferingCredentialSubject extends GaiaxCredentialSubject {
 	@JsonLdProperty(value = "id", formatName = SERVICE_OFFERING_CREDENTIAL_SUBJECT)
-	private final String id;
-
-	@JsonLdProperty(value = "name", namespace = SCHEMA_NS)
-	private final String name;
-
-	@JsonLdProperty(value = "description", namespace = SCHEMA_NS)
-	private final String description;
+	protected final String id;
 
 	@JsonLdProperty(value = "providedBy", namespace = GAIAX_NS, mandatory = true)
-	private final ProvidedBy providedBy;
+	protected final ProvidedBy providedBy;
 
 	@JsonLdProperty(value = "serviceOfferingTermsAndConditions", namespace = GAIAX_NS, mandatory = true)
-	private final Collection<TermsAndConditions> serviceOfferingTermsAndConditions;
+	protected final Collection<TermsAndConditions> serviceOfferingTermsAndConditions;
 
 	@JsonLdProperty(value = "servicePolicy", namespace = GAIAX_NS)
-	private final Collection<AccessUsagePolicy> servicePolicy;
+	protected final Collection<AccessUsagePolicy> servicePolicy;
 
 	@JsonLdProperty(value = "dataAccountExport", namespace = GAIAX_NS, mandatory = true)
-	private final Collection<DataAccountExport> dataAccountExport;
+	protected final Collection<DataAccountExport> dataAccountExport;
 
 	@JsonLdProperty(value = "aggregationOfResources", namespace = GAIAX_NS)
-	private final Collection<AggregationOfResource> aggregationOfResources;
+	protected final Collection<AggregationOfResource> aggregationOfResources;
 
 	@JsonLdProperty(value = "legalDocuments", namespace = GAIAX_NS)
-	private final Collection<LegalDocument> legalDocuments;
+	protected final Collection<LegalDocument> legalDocuments;
 
 	@JsonLdProperty(value = "subContractors", namespace = GAIAX_NS)
-	private final Collection<SubContractor> subContractors;
+	protected final Collection<SubContractor> subContractors;
 
 	@JsonLdProperty(value = "requiredMeasures", namespace = GAIAX_NS)
-	private final Collection<Measure> requiredMeasures;
+	protected final Collection<Measure> requiredMeasures;
 
 	@JsonLdProperty(value = "providerContactInformation", namespace = GAIAX_NS)
-	private final ContactInformation providerContactInformation;
+	protected final ContactInformation providerContactInformation;
 
 	public ServiceOfferingCredentialSubject(String id, String name, String description, ProvidedBy providedBy,
 			Collection<TermsAndConditions> serviceOfferingTermsAndConditions, Collection<AccessUsagePolicy> servicePolicy,
 			Collection<DataAccountExport> dataAccountExport, Collection<AggregationOfResource> aggregationOfResources,
 			Collection<LegalDocument> legalDocuments, Collection<SubContractor> subContractors, Collection<Measure> requiredMeasures,
 			ContactInformation providerContactInformation) {
+		super(name, description);
 		this.id = id;
-		this.name = name;
-		this.description = description;
 		this.providedBy = providedBy;
 		this.serviceOfferingTermsAndConditions = serviceOfferingTermsAndConditions;
 		this.servicePolicy = servicePolicy;
@@ -70,20 +63,19 @@ public class ServiceOfferingCredentialSubject implements CredentialSubject {
 		this.providerContactInformation = providerContactInformation;
 	}
 
-	public static ServiceOfferingCredentialSubjectBuilder builder() {
-		return new ServiceOfferingCredentialSubjectBuilder();
+	public static ServiceOfferingCredentialSubjectBuilder<? extends ServiceOfferingCredentialSubject> builder() {
+		return new ServiceOfferingCredentialSubjectBuilder<>() {
+			@Override
+			public ServiceOfferingCredentialSubject build() {
+				return new ServiceOfferingCredentialSubject(id, name, description, providedBy, serviceOfferingTermsAndConditions,
+						servicePolicy, dataAccountExport, aggregationOfResources, legalDocuments, subContractors, requiredMeasures,
+						providerContactInformation);
+			}
+		};
 	}
 
 	public String getId() {
 		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getDescription() {
-		return description;
 	}
 
 	public ProvidedBy getProvidedBy() {
@@ -163,100 +155,96 @@ public class ServiceOfferingCredentialSubject implements CredentialSubject {
 				'}';
 	}
 
-	public static class ServiceOfferingCredentialSubjectBuilder {
-		private String id;
+	public abstract static class ServiceOfferingCredentialSubjectBuilder<T extends ServiceOfferingCredentialSubject> {
+		protected String id;
 
-		private String name;
+		protected String name;
 
-		private String description;
+		protected String description;
 
-		private ProvidedBy providedBy;
+		protected ProvidedBy providedBy;
 
-		private Collection<TermsAndConditions> serviceOfferingTermsAndConditions;
+		protected Collection<TermsAndConditions> serviceOfferingTermsAndConditions;
 
-		private Collection<AccessUsagePolicy> servicePolicy;
+		protected Collection<AccessUsagePolicy> servicePolicy;
 
-		private Collection<DataAccountExport> dataAccountExport;
+		protected Collection<DataAccountExport> dataAccountExport;
 
-		private Collection<AggregationOfResource> aggregationOfResources;
+		protected Collection<AggregationOfResource> aggregationOfResources;
 
-		private Collection<LegalDocument> legalDocuments;
+		protected Collection<LegalDocument> legalDocuments;
 
-		private Collection<SubContractor> subContractors;
+		protected Collection<SubContractor> subContractors;
 
-		private Collection<Measure> requiredMeasures;
+		protected Collection<Measure> requiredMeasures;
 
-		private ContactInformation providerContactInformation;
+		protected ContactInformation providerContactInformation;
 
 		ServiceOfferingCredentialSubjectBuilder() {
 		}
 
-		public ServiceOfferingCredentialSubjectBuilder id(String id) {
+		public ServiceOfferingCredentialSubjectBuilder<T> id(String id) {
 			this.id = id;
 			return this;
 		}
 
-		public ServiceOfferingCredentialSubjectBuilder name(String name) {
+		public ServiceOfferingCredentialSubjectBuilder<T> name(String name) {
 			this.name = name;
 			return this;
 		}
 
-		public ServiceOfferingCredentialSubjectBuilder description(String description) {
+		public ServiceOfferingCredentialSubjectBuilder<T> description(String description) {
 			this.description = description;
 			return this;
 		}
 
-		public ServiceOfferingCredentialSubjectBuilder providedBy(ProvidedBy providedBy) {
+		public ServiceOfferingCredentialSubjectBuilder<T> providedBy(ProvidedBy providedBy) {
 			this.providedBy = providedBy;
 			return this;
 		}
 
-		public ServiceOfferingCredentialSubjectBuilder termsAndConditions(
+		public ServiceOfferingCredentialSubjectBuilder<T> serviceOfferingTermsAndConditions(
 				Collection<TermsAndConditions> serviceOfferingTermsAndConditions) {
 			this.serviceOfferingTermsAndConditions = serviceOfferingTermsAndConditions;
 			return this;
 		}
 
-		public ServiceOfferingCredentialSubjectBuilder servicePolicy(Collection<AccessUsagePolicy> servicePolicy) {
+		public ServiceOfferingCredentialSubjectBuilder<T> servicePolicy(Collection<AccessUsagePolicy> servicePolicy) {
 			this.servicePolicy = servicePolicy;
 			return this;
 		}
 
-		public ServiceOfferingCredentialSubjectBuilder dataAccountExport(Collection<DataAccountExport> dataAccountExport) {
+		public ServiceOfferingCredentialSubjectBuilder<T> dataAccountExport(Collection<DataAccountExport> dataAccountExport) {
 			this.dataAccountExport = dataAccountExport;
 			return this;
 		}
 
-		public ServiceOfferingCredentialSubjectBuilder aggregationOfResources(Collection<AggregationOfResource> aggregationOfResources) {
+		public ServiceOfferingCredentialSubjectBuilder<T> aggregationOfResources(Collection<AggregationOfResource> aggregationOfResources) {
 			this.aggregationOfResources = aggregationOfResources;
 			return this;
 		}
 
-		public ServiceOfferingCredentialSubjectBuilder legalDocuments(Collection<LegalDocument> legalDocuments) {
+		public ServiceOfferingCredentialSubjectBuilder<T> legalDocuments(Collection<LegalDocument> legalDocuments) {
 			this.legalDocuments = legalDocuments;
 			return this;
 		}
 
-		public ServiceOfferingCredentialSubjectBuilder subContractors(Collection<SubContractor> subContractors) {
+		public ServiceOfferingCredentialSubjectBuilder<T> subContractors(Collection<SubContractor> subContractors) {
 			this.subContractors = subContractors;
 			return this;
 		}
 
-		public ServiceOfferingCredentialSubjectBuilder requiredMeasures(Collection<Measure> requiredMeasures) {
+		public ServiceOfferingCredentialSubjectBuilder<T> requiredMeasures(Collection<Measure> requiredMeasures) {
 			this.requiredMeasures = requiredMeasures;
 			return this;
 		}
 
-		public ServiceOfferingCredentialSubjectBuilder providerContactInformation(ContactInformation providerContactInformation) {
+		public ServiceOfferingCredentialSubjectBuilder<T> providerContactInformation(ContactInformation providerContactInformation) {
 			this.providerContactInformation = providerContactInformation;
 			return this;
 		}
 
-		public ServiceOfferingCredentialSubject build() {
-			return new ServiceOfferingCredentialSubject(id, name, description, providedBy, serviceOfferingTermsAndConditions,
-					servicePolicy, dataAccountExport, aggregationOfResources, legalDocuments, subContractors, requiredMeasures,
-					providerContactInformation);
-		}
+		public abstract T build();
 
 		@Override
 		public String toString() {

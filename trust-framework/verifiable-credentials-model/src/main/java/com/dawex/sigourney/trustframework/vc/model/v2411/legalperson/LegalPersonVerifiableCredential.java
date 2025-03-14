@@ -4,9 +4,10 @@ import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdProper
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdType;
 import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.BaseVerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.BaseVerifiableCredentialBuilder;
-import com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format;
 
 import java.time.ZonedDateTime;
+
+import static com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format.LEGAL_PERSON_VERIFIABLE_CREDENTIAL;
 
 /**
  * @see <a href="https://docs.gaia-x.eu/ontology/development/classes/LegalPerson/">Gaia-X Service Characteristics : LegalPerson</a>
@@ -28,7 +29,7 @@ public class LegalPersonVerifiableCredential extends BaseVerifiableCredential<Le
 		};
 	}
 
-	@JsonLdProperty(value = "id", formatName = Format.LEGAL_PERSON_VERIFIABLE_CREDENTIAL)
+	@JsonLdProperty(value = "id", formatName = LEGAL_PERSON_VERIFIABLE_CREDENTIAL)
 	@Override
 	public String getId() {
 		return super.getId();

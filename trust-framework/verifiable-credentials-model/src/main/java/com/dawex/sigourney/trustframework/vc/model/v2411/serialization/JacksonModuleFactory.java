@@ -16,12 +16,15 @@ import com.dawex.sigourney.trustframework.vc.model.shared.JsonWebKey2020;
 import com.dawex.sigourney.trustframework.vc.model.v2411.common.AccessUsagePolicy;
 import com.dawex.sigourney.trustframework.vc.model.v2411.common.Address;
 import com.dawex.sigourney.trustframework.vc.model.v2411.common.ContactInformation;
+import com.dawex.sigourney.trustframework.vc.model.v2411.common.ExposedThrough;
 import com.dawex.sigourney.trustframework.vc.model.v2411.common.TermsAndConditions;
 import com.dawex.sigourney.trustframework.vc.model.v2411.dataresource.CopyrightOwnedBy;
 import com.dawex.sigourney.trustframework.vc.model.v2411.dataresource.DataResourceCredentialSubject;
 import com.dawex.sigourney.trustframework.vc.model.v2411.dataresource.DataResourceVerifiableCredential;
-import com.dawex.sigourney.trustframework.vc.model.v2411.dataresource.ExposedThrough;
 import com.dawex.sigourney.trustframework.vc.model.v2411.dataresource.ProducedBy;
+import com.dawex.sigourney.trustframework.vc.model.v2411.dataset.DataSetCredentialSubject;
+import com.dawex.sigourney.trustframework.vc.model.v2411.dataset.DataSetVerifiableCredential;
+import com.dawex.sigourney.trustframework.vc.model.v2411.dataset.Distribution;
 import com.dawex.sigourney.trustframework.vc.model.v2411.issuer.IssuerCredentialSubject;
 import com.dawex.sigourney.trustframework.vc.model.v2411.issuer.IssuerVerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.model.v2411.legaldocument.CustomerDataAccessTermsVerifiableCredential;
@@ -31,16 +34,20 @@ import com.dawex.sigourney.trustframework.vc.model.v2411.legaldocument.InvolvedP
 import com.dawex.sigourney.trustframework.vc.model.v2411.legaldocument.LegalDocumentCredentialSubject;
 import com.dawex.sigourney.trustframework.vc.model.v2411.legaldocument.LegalDocumentVerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.model.v2411.legaldocument.LegallyBindingActVerifiableCredential;
+import com.dawex.sigourney.trustframework.vc.model.v2411.legalperson.DataProducerCredentialSubject;
+import com.dawex.sigourney.trustframework.vc.model.v2411.legalperson.DataProducerVerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.model.v2411.legalperson.LegalPersonCredentialSubject;
 import com.dawex.sigourney.trustframework.vc.model.v2411.legalperson.LegalPersonVerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.model.v2411.legalperson.RegistrationNumber;
 import com.dawex.sigourney.trustframework.vc.model.v2411.physicalresource.MaintainedBy;
 import com.dawex.sigourney.trustframework.vc.model.v2411.physicalresource.PhysicalResourceCredentialSubject;
 import com.dawex.sigourney.trustframework.vc.model.v2411.physicalresource.PhysicalResourceVerifiableCredential;
+import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.AggregationOf;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.AggregationOfResource;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.DataAccountExport;
+import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.DataProductCredentialSubject;
+import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.DataProductVerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.Measure;
-import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.ProvidedBy;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.ServiceOfferingCredentialSubject;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.ServiceOfferingVerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.SubContractor;
@@ -49,6 +56,8 @@ import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.legaldo
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.legaldocument.DocumentChangeProcedures;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.legaldocument.LegalDocument;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.legaldocument.LegallyBindingAct;
+import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.providedby.ProvidedByDataProducer;
+import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.providedby.ProvidedByLegalPerson;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
@@ -61,10 +70,13 @@ public class JacksonModuleFactory {
 	 * Create a configured Jackson module for serializing legalPerson verifiable credentials
 	 */
 	public static Module legalPersonSerializationModule(FormatProvider formatProvider, Supplier<String> baseIriSupplier) {
-		final List<Class> domainClasses = List.of(Address.class,
+		final List<Class> domainClasses = List.of(
+				Address.class,
+				DataProducerCredentialSubject.class,
+				DataProducerVerifiableCredential.class,
 				LegalPersonCredentialSubject.class,
-				RegistrationNumber.class,
-				LegalPersonVerifiableCredential.class);
+				LegalPersonVerifiableCredential.class,
+				RegistrationNumber.class);
 		return createVerifiableCredentialSerializationModule(formatProvider, baseIriSupplier, domainClasses);
 	}
 
@@ -75,32 +87,49 @@ public class JacksonModuleFactory {
 		final List<Class> domainClasses = List.of(
 				AccessUsagePolicy.class,
 				Address.class,
+				AggregationOf.class,
 				AggregationOfResource.class,
 				ContactInformation.class,
 				CustomerDataAccessTerms.class,
 				CustomerDataProcessingTerms.class,
 				DataAccountExport.class,
+				DataProductCredentialSubject.class,
+				DataProductVerifiableCredential.class,
 				DocumentChangeProcedures.class,
-				LegallyBindingAct.class,
 				LegalDocument.class,
+				LegallyBindingAct.class,
 				Measure.class,
+				ProvidedByLegalPerson.class,
+				ProvidedByDataProducer.class,
 				ServiceOfferingCredentialSubject.class,
 				ServiceOfferingVerifiableCredential.class,
 				SubContractor.class,
-				ProvidedBy.class,
 				TermsAndConditions.class);
 		return createVerifiableCredentialSerializationModule(formatProvider, baseIriSupplier, domainClasses);
 	}
 
 	/**
-	 * Create a configured Jackson module for serializing data resources verifiable credentials
+	 * Create a configured Jackson module for serializing data resource verifiable credentials
 	 */
 	public static Module dataResourceSerializationModule(FormatProvider formatProvider, Supplier<String> baseIriSupplier) {
-		final List<Class> domainClasses = List.of(CopyrightOwnedBy.class,
+		final List<Class> domainClasses = List.of(
+				CopyrightOwnedBy.class,
 				DataResourceCredentialSubject.class,
 				DataResourceVerifiableCredential.class,
 				ExposedThrough.class,
 				ProducedBy.class);
+		return createVerifiableCredentialSerializationModule(formatProvider, baseIriSupplier, domainClasses);
+	}
+
+	/**
+	 * Create a configured Jackson module for serializing data set verifiable credentials
+	 */
+	public static Module dataSetSerializationModule(FormatProvider formatProvider, Supplier<String> baseIriSupplier) {
+		final List<Class> domainClasses = List.of(
+				DataSetCredentialSubject.class,
+				DataSetVerifiableCredential.class,
+				Distribution.class,
+				ExposedThrough.class);
 		return createVerifiableCredentialSerializationModule(formatProvider, baseIriSupplier, domainClasses);
 	}
 

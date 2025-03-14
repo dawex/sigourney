@@ -13,7 +13,7 @@ import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.legaldo
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.legaldocument.DocumentChangeProcedures;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.legaldocument.LegalDocument;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.legaldocument.LegallyBindingAct;
-import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.providedby.ProvidedByLegalPerson;
+import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.providedby.ProvidedByDataProducer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -33,18 +33,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
 import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
 
-class ServiceOfferingVerifiableCredentialTest {
+class DataProductVerifiableCredentialTest {
 
 	private static ObjectMapper objectMapper;
 
 	@BeforeAll
 	static void init() {
 		final DefaultFormatProvider formatProvider = new DefaultFormatProvider();
-		formatProvider.setFormat(Format.SERVICE_OFFERING_VERIFIABLE_CREDENTIAL, "./dataOfferings/%s/vc");
-		formatProvider.setFormat(Format.SERVICE_OFFERING_CREDENTIAL_SUBJECT, "./dataOfferings/%s/cs");
-		formatProvider.setFormat(Format.SERVICE_OFFERING_AGGREGATION_OF_RESOURCE, "./aggregationOfResources/%s");
-		formatProvider.setFormat(Format.SERVICE_OFFERING_PROVIDED_BY, "./providedBy/%s");
+		formatProvider.setFormat(Format.DATA_PRODUCT_VERIFIABLE_CREDENTIAL, "./dataOfferings/%s/vc");
+		formatProvider.setFormat(Format.DATA_PRODUCT_CREDENTIAL_SUBJECT, "./dataOfferings/%s/cs");
+		formatProvider.setFormat(Format.DATA_PRODUCT_AGGREGATION_OF, "./aggregationOf/%s");
+		formatProvider.setFormat(Format.DATA_PRODUCT_PROVIDED_BY, "./providedBy/%s");
 		formatProvider.setFormat(Format.LEGAL_DOCUMENT_INVOLVED_PARTIES, "./involvedParty/%s");
+		formatProvider.setFormat(Format.SERVICE_OFFERING_AGGREGATION_OF_RESOURCE, "./aggregationOfResources/%s");
 		formatProvider.setFormat(Format.TERMS_AND_CONDITIONS_URL, "./termsAndConditions/%s");
 
 		objectMapper = new ObjectMapper();
@@ -53,9 +54,9 @@ class ServiceOfferingVerifiableCredentialTest {
 	}
 
 	@Test
-	void shouldGenerateValidVerifiableCredentialForServiceoffering() throws JsonProcessingException {
+	void shouldGenerateValidVerifiableCredentialForDataProduct() throws JsonProcessingException {
 		// given
-		final var verifiableCredential = getServiceOfferingVerifiableCredential();
+		final var verifiableCredential = getDataProductVerifiableCredential();
 		// when
 		final String serializedVc = objectMapper.writeValueAsString(verifiableCredential);
 		// then
@@ -69,7 +70,7 @@ class ServiceOfferingVerifiableCredentialTest {
 		assertThatJsonStringValue("$['@context'][2]['@base']", serializedVc).isEqualTo("https://dawex.com");
 
 		assertThatJsonListValue("$['type']", serializedVc).hasSize(2)
-				.contains("VerifiableCredential", "gx:ServiceOffering");
+				.contains("VerifiableCredential", "gx:DataProduct");
 		assertThatJsonStringValue("$['id']", serializedVc)
 				.isEqualTo("./dataOfferings/62bab5ae84fd784b1541e8f3/vc");
 		assertThatJsonStringValue("$['issuer']", serializedVc).isEqualTo("62b570acb33e417ed-issuer");
@@ -77,14 +78,31 @@ class ServiceOfferingVerifiableCredentialTest {
 		assertThatJsonStringValue("$['validUntil']", serializedVc).isEqualTo("2025-05-21T15:38:02Z");
 
 		assertThatJsonStringValue("$['credentialSubject']['id']", serializedVc)
-				.isEqualTo("./dataOfferings/62bab5ae84fd784-serviceoffering/cs");
+				.isEqualTo("./dataOfferings/62bab5ae84fd784-dataProduct/cs");
 		assertThatJsonStringValue("$['credentialSubject']['schema:name']", serializedVc)
 				.isEqualTo("Statistics of road accidents in France");
 		assertThatJsonStringValue("$['credentialSubject']['schema:description']", serializedVc)
 				.isEqualTo("This publication provides data on road accidents in France.");
+		assertThatJsonStringValue("$['credentialSubject']['dcterms:identifier']", serializedVc)
+				.isEqualTo("62bab5ae84fd784-dataProduct-identifier");
+		assertThatJsonStringValue("$['credentialSubject']['dcterms:title']", serializedVc)
+				.isEqualTo("62bab5ae84fd784-dataProduct-title");
+		assertThatJsonMapValue("$['credentialSubject']['dcterms:issued']", serializedVc).hasSize(2)
+				.containsExactlyInAnyOrderEntriesOf(Map.of(
+						"@type", "xsd:date",
+						"@value", "2025-03-14Z"));
+		assertThatJsonStringValue("$['credentialSubject']['gx:termsAndConditions']", serializedVc)
+				.isEqualTo("62bab5ae84fd784-dataProduct-terms-and-conditions");
+		assertThatJsonListValue("$['credentialSubject']['dcterms:license']", serializedVc).hasSize(1)
+				.first().asString().isEqualTo("62bab5ae84fd784-dataProduct-license");
+		assertThatJsonListValue("$['credentialSubject']['gx:aggregationOf']", serializedVc).hasSize(1)
+				.first().asInstanceOf(MAP)
+				.containsExactlyInAnyOrderEntriesOf(Map.of(
+						"type", "gx:DataSet",
+						"id", "./aggregationOf/62bab5ae84fd784-dataset"));
+
 		assertThatJsonStringValue("$['credentialSubject']['gx:providedBy']['id']", serializedVc)
 				.isEqualTo("./providedBy/62b570acb33e417-provider");
-
 		assertThatJsonListValue("$['credentialSubject']['gx:serviceOfferingTermsAndConditions']", serializedVc).hasSize(1);
 		assertThatJsonStringValue("$['credentialSubject']['gx:serviceOfferingTermsAndConditions'][0]['type']", serializedVc)
 				.isEqualTo("gx:TermsAndConditions");
@@ -176,17 +194,23 @@ class ServiceOfferingVerifiableCredentialTest {
 				.containsExactlyInAnyOrderEntriesOf(Map.of("type", type, "id", id));
 	}
 
-	private static ServiceOfferingVerifiableCredential getServiceOfferingVerifiableCredential() {
-		return ServiceOfferingVerifiableCredential.builder()
+	private static DataProductVerifiableCredential getDataProductVerifiableCredential() {
+		return DataProductVerifiableCredential.builder()
 				.id("62bab5ae84fd784b1541e8f3")
 				.issuer("62b570acb33e417ed-issuer")
 				.validFrom(LocalDate.of(2025, Month.FEBRUARY, 21).atTime(15, 38, 2).atZone(ZoneOffset.UTC))
 				.validUntil(LocalDate.of(2025, Month.MAY, 21).atTime(15, 38, 2).atZone(ZoneOffset.UTC))
-				.credentialSubject(ServiceOfferingCredentialSubject.builder()
-						.id("62bab5ae84fd784-serviceoffering")
+				.credentialSubject(DataProductCredentialSubject.builder()
+						.identifier("62bab5ae84fd784-dataProduct-identifier")
+						.title("62bab5ae84fd784-dataProduct-title")
+						.issued(LocalDate.of(2025, 3, 14))
+						.termsAndConditions("62bab5ae84fd784-dataProduct-terms-and-conditions")
+						.licenses(List.of("62bab5ae84fd784-dataProduct-license"))
+						.aggregationOf(List.of(new AggregationOf("62bab5ae84fd784-dataset")))
+						.id("62bab5ae84fd784-dataProduct")
 						.name("Statistics of road accidents in France")
 						.description("This publication provides data on road accidents in France.")
-						.providedBy(new ProvidedByLegalPerson("62b570acb33e417-provider"))
+						.providedBy(new ProvidedByDataProducer("62b570acb33e417-provider"))
 						.serviceOfferingTermsAndConditions(List.of(TermsAndConditions.builder()
 								.url("60f5ab")
 								.hash("d8402a23de560f5ab34b22d1a142feb9e13b3143")

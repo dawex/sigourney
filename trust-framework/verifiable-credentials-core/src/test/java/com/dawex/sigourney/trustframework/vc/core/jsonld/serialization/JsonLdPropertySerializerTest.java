@@ -249,15 +249,23 @@ class JsonLdPropertySerializerTest {
 			@JsonLdProperty("parent")
 			private final String parentProperty;
 
+			@JsonLdProperty("child")
+			private final String childProperty;
+
 			private final String parentOther;
 
-			public ParentTest(String parentProperty, String parentOther) {
+			public ParentTest(String parentProperty, String childProperty, String parentOther) {
 				this.parentProperty = parentProperty;
+				this.childProperty = childProperty;
 				this.parentOther = parentOther;
 			}
 
 			public String getParentProperty() {
 				return parentProperty;
+			}
+
+			public String getChildProperty() {
+				return childProperty;
 			}
 
 			public String getParentOther() {
@@ -271,7 +279,7 @@ class JsonLdPropertySerializerTest {
 			private final String otherProperty;
 
 			public Test(String parentProperty, String parentOther, String property, String otherProperty) {
-				super(parentProperty, parentOther);
+				super(parentProperty, "should-not-be-serialized", parentOther);
 				this.property = property;
 				this.otherProperty = otherProperty;
 			}

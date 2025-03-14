@@ -1,6 +1,5 @@
 package com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering;
 
-import com.dawex.sigourney.trustframework.vc.core.jsonld.CompositeValue;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdProperty;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdType;
 import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.BaseVerifiableCredential;
@@ -15,52 +14,24 @@ import static com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Fo
  */
 @JsonLdType({"VerifiableCredential", "gx:ServiceOffering"})
 public class ServiceOfferingVerifiableCredential extends BaseVerifiableCredential<ServiceOfferingCredentialSubject> {
-	@JsonLdProperty(value = "id", formatName = SERVICE_OFFERING_VERIFIABLE_CREDENTIAL)
-	private final Id compositeId;
 
-	public ServiceOfferingVerifiableCredential(Id compositeId, String issuer, ZonedDateTime validFrom, ZonedDateTime validUntil,
+	public ServiceOfferingVerifiableCredential(String id, String issuer, ZonedDateTime validFrom, ZonedDateTime validUntil,
 			ServiceOfferingCredentialSubject credentialSubject) {
-		super(null, issuer, validFrom, validUntil, credentialSubject);
-		this.compositeId = compositeId;
+		super(id, issuer, validFrom, validUntil, credentialSubject);
 	}
 
-	public static ServiceOfferingVerifiableCredentialBuilder builder() {
-		return new ServiceOfferingVerifiableCredentialBuilder();
+	public static BaseVerifiableCredentialBuilder<ServiceOfferingVerifiableCredential, ServiceOfferingCredentialSubject> builder() {
+		return new BaseVerifiableCredentialBuilder<>() {
+			@Override
+			public ServiceOfferingVerifiableCredential build() {
+				return new ServiceOfferingVerifiableCredential(id, issuer, validFrom, validUntil, credentialSubject);
+			}
+		};
 	}
 
-	public Id getCompositeId() {
-		return compositeId;
-	}
-
-	public record Id(String serviceOfferingId, String legalPersonId) implements CompositeValue {
-		@Override
-		public Object[] getValues() {
-			return new Object[]{legalPersonId, serviceOfferingId};
-		}
-	}
-
-	public static class ServiceOfferingVerifiableCredentialBuilder
-			extends BaseVerifiableCredentialBuilder<ServiceOfferingVerifiableCredential, ServiceOfferingCredentialSubject> {
-
-		private Id compositeId;
-
-		ServiceOfferingVerifiableCredentialBuilder() {
-		}
-
-		public ServiceOfferingVerifiableCredentialBuilder compositeId(Id compositeId) {
-			this.compositeId = compositeId;
-			return this;
-		}
-
-		@Override
-		public ServiceOfferingVerifiableCredentialBuilder id(String id) {
-			this.compositeId = new Id(id, id);
-			return this;
-		}
-
-		@Override
-		public ServiceOfferingVerifiableCredential build() {
-			return new ServiceOfferingVerifiableCredential(compositeId, issuer, validFrom, validUntil, credentialSubject);
-		}
+	@JsonLdProperty(value = "id", formatName = SERVICE_OFFERING_VERIFIABLE_CREDENTIAL)
+	@Override
+	public String getId() {
+		return super.getId();
 	}
 }

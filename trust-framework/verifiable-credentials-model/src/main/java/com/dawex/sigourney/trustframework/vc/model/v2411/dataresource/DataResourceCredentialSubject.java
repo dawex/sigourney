@@ -3,24 +3,18 @@ package com.dawex.sigourney.trustframework.vc.model.v2411.dataresource;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.JsonLdValueObject;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.XsdDataType;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdProperty;
-import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.CredentialSubject;
-import com.dawex.sigourney.trustframework.vc.model.v2411.Namespace;
-import com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format;
+import com.dawex.sigourney.trustframework.vc.model.v2411.common.ExposedThrough;
+import com.dawex.sigourney.trustframework.vc.model.v2411.common.GaiaxCredentialSubject;
 
 import java.util.Collection;
 import java.util.Objects;
 
 import static com.dawex.sigourney.trustframework.vc.model.v2411.Namespace.GAIAX_NS;
+import static com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format.DATA_RESOURCE_CREDENTIAL_SUBJECT;
 
-public class DataResourceCredentialSubject implements CredentialSubject {
-	@JsonLdProperty(value = "id", formatName = Format.DATA_RESOURCE_CREDENTIAL_SUBJECT)
+public class DataResourceCredentialSubject extends GaiaxCredentialSubject {
+	@JsonLdProperty(value = "id", formatName = DATA_RESOURCE_CREDENTIAL_SUBJECT)
 	private final String id;
-
-	@JsonLdProperty(value = "name", namespace = Namespace.SCHEMA_NS)
-	private final String name;
-
-	@JsonLdProperty(value = "description", namespace = Namespace.SCHEMA_NS)
-	private final String description;
 
 	@JsonLdProperty(value = "producedBy", namespace = GAIAX_NS, mandatory = true)
 	private final ProducedBy producedBy;
@@ -43,9 +37,8 @@ public class DataResourceCredentialSubject implements CredentialSubject {
 	public DataResourceCredentialSubject(String id, String name, String description, ProducedBy producedBy, ExposedThrough exposedThrough,
 			boolean containsPII, Collection<CopyrightOwnedBy> copyrightOwnedBy, Collection<String> resourcePolicy,
 			Collection<JsonLdValueObject<String>> license) {
+		super(name, description);
 		this.id = id;
-		this.name = name;
-		this.description = description;
 		this.producedBy = producedBy;
 		this.exposedThrough = exposedThrough;
 		this.containsPII = containsPII;
@@ -61,14 +54,6 @@ public class DataResourceCredentialSubject implements CredentialSubject {
 	@Override
 	public String getId() {
 		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getDescription() {
-		return description;
 	}
 
 	public ProducedBy getProducedBy() {

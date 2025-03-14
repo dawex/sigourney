@@ -31,7 +31,7 @@ class LegalDocumentVerifiableCredentialTest {
 		final DefaultFormatProvider formatProvider = new DefaultFormatProvider();
 		formatProvider.setFormat(Format.LEGAL_DOCUMENT_VERIFIABLE_CREDENTIAL, "./legalDocument/%s/vc");
 		formatProvider.setFormat(Format.LEGAL_DOCUMENT_CREDENTIAL_SUBJECT, "./legalDocument/%s/cs");
-		formatProvider.setFormat(Format.SERVICE_OFFERING_INVOLVED_PARTIES, "./involvedParty/%s");
+		formatProvider.setFormat(Format.LEGAL_DOCUMENT_INVOLVED_PARTIES, "./involvedParty/%s");
 
 		objectMapper = new ObjectMapper();
 		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);

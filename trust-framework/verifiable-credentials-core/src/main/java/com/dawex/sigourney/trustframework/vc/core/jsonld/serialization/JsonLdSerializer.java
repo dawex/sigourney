@@ -9,6 +9,7 @@ import com.dawex.sigourney.trustframework.vc.core.jsonld.exception.JsonLdSeriali
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import jakarta.annotation.Nullable;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -25,10 +26,13 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -97,11 +101,25 @@ public class JsonLdSerializer<T> extends JsonSerializer<T> {
 	}
 
 	protected void writeJsonLdProperties(Object value, Class<?> targetClass, JsonGenerator jsonGenerator) {
+		getJsonLdFields(value, targetClass).forEach(jsonLdField -> {
+			try {
+				if (jsonLdField.value() == null) {
+					jsonGenerator.writeNullField(jsonLdField.property());
+				} else {
+					jsonGenerator.writeObjectField(jsonLdField.property(), jsonLdField.value());
+				}
+			} catch (IOException e) {
+				throw new JsonLdSerializationException(e);
+			}
+		});
+	}
+
+	private Collection<JsonLdField> getJsonLdFields(Object value, Class<?> targetClass) {
 		if (targetClass == null || targetClass == Object.class) {
-			return;
+			return Set.of();
 		}
-		// write parent class fields
-		writeJsonLdProperties(value, targetClass.getSuperclass(), jsonGenerator);
+		// get parent class fields
+		final var jsonLdFields = new ArrayList<>(getJsonLdFields(value, targetClass.getSuperclass()));
 
 		// fields and methods annotated with @JsonLdProperty
 		// only build from getter for record, so @JsonLdProperty are not processed twice
@@ -110,7 +128,16 @@ public class JsonLdSerializer<T> extends JsonSerializer<T> {
 				: Stream.concat(getFieldContextsFromDeclaredFields(targetClass), getFieldContextsFromDeclaredGetters(targetClass)))
 
 				.filter(FieldContext::isValid)
-				.forEach(context -> writeJsonLdProperty(value, context.jsonLdProperty, context.readMethod(), jsonGenerator));
+				.map(context -> getJsonLdField(value, context.jsonLdProperty, context.readMethod()))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.forEach(field -> {
+					// overwrite parent value if any
+					jsonLdFields.removeIf(existing -> Objects.equals(existing.property(), field.property()));
+					jsonLdFields.add(field);
+				});
+
+		return jsonLdFields;
 	}
 
 	private static Stream<FieldContext> getFieldContextsFromDeclaredFields(Class<?> targetClass) {
@@ -133,27 +160,24 @@ public class JsonLdSerializer<T> extends JsonSerializer<T> {
 		}
 	}
 
-	private void writeJsonLdProperty(Object obj, JsonLdProperty jsonLdProperty, Method getterMethod, JsonGenerator jsonGenerator) {
+	private Optional<JsonLdField> getJsonLdField(Object obj, JsonLdProperty jsonLdProperty, Method getterMethod) {
 		try {
 			final Object value = getterMethod.invoke(obj);
 			if (value == null) {
-				writeJsonLdNullField(jsonLdProperty, getterMethod, jsonGenerator);
-				return;
+				if (jsonLdProperty.mandatory()) {
+					if (Collection.class.isAssignableFrom(getterMethod.getReturnType())) {
+						return Optional.of(new JsonLdField(getJsonFieldName(jsonLdProperty), List.of()));
+					} else {
+						return Optional.of(new JsonLdField(getJsonFieldName(jsonLdProperty), null));
+					}
+				} else {
+					return Optional.empty();
+				}
 			}
-			jsonGenerator.writeObjectField(getJsonFieldName(jsonLdProperty), getJsonFieldValue(jsonLdProperty, value));
+			return Optional.of(new JsonLdField(getJsonFieldName(jsonLdProperty), getJsonFieldValue(jsonLdProperty, value)));
 
-		} catch (IllegalAccessException | InvocationTargetException | IOException e) {
+		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new JsonLdSerializationException(e);
-		}
-	}
-
-	private void writeJsonLdNullField(JsonLdProperty jsonLdProperty, Method getterMethod, JsonGenerator jsonGenerator) throws IOException {
-		if (jsonLdProperty.mandatory()) {
-			if (Collection.class.isAssignableFrom(getterMethod.getReturnType())) {
-				jsonGenerator.writeObjectField(getJsonFieldName(jsonLdProperty), List.of());
-			} else {
-				jsonGenerator.writeNullField(getJsonFieldName(jsonLdProperty));
-			}
 		}
 	}
 
@@ -220,6 +244,12 @@ public class JsonLdSerializer<T> extends JsonSerializer<T> {
 			return Optional.empty();
 		}
 		return formatProvider.getFormat(formatName);
+	}
+
+	/**
+	 * Helper record representing a pair of property and value to be written in the final Json-LD document.
+	 */
+	private record JsonLdField(String property, @Nullable Object value) {
 	}
 
 	/**

@@ -17,38 +17,39 @@ import java.time.ZoneOffset;
 import static com.dawex.sigourney.trustframework.vc.model.utils.TestUtils.assertThatJsonListValue;
 import static com.dawex.sigourney.trustframework.vc.model.utils.TestUtils.assertThatJsonStringValue;
 
-class LegalPersonVerifiableCredentialTest {
+class DataProducerVerifiableCredentialTest {
 
 	private static ObjectMapper objectMapper;
 
 	@BeforeAll
 	static void init() {
 		final DefaultFormatProvider formatProvider = new DefaultFormatProvider();
-		formatProvider.setFormat(Format.LEGAL_PERSON_VERIFIABLE_CREDENTIAL, "./legalPersons/%s/vc");
-		formatProvider.setFormat(Format.LEGAL_PERSON_CREDENTIAL_SUBJECT, "./legalPersons/%s/cs");
+		formatProvider.setFormat(Format.DATA_PRODUCER_VERIFIABLE_CREDENTIAL, "./dataProducers/%s/vc");
+		formatProvider.setFormat(Format.DATA_PRODUCER_CREDENTIAL_SUBJECT, "./dataProducers/%s/cs");
 
 		objectMapper = new ObjectMapper();
 		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-		objectMapper.registerModule(JacksonModuleFactory.legalPersonSerializationModule(formatProvider, () -> "https://dawex.com"));
+
+		objectMapper.registerModules(JacksonModuleFactory.legalPersonSerializationModule(formatProvider, () -> "https://dawex.com"));
 	}
 
 	@Test
-	void shouldJsonSerializeVerifiableCredentialForLegalPerson() throws JsonProcessingException {
+	void shouldJsonSerializeVerifiableCredentialForDataProducer() throws JsonProcessingException {
 		// given
-		final var verifiableCredential = getLegalPersonVerifiableCredential();
+		final var verifiableCredential = getDataProducerVerifiableCredential();
 		// when
 		final String serializedVc = objectMapper.writeValueAsString(verifiableCredential);
 		// then
 		assertThatClaimsAreValid(serializedVc);
 	}
 
-	private static LegalPersonVerifiableCredential getLegalPersonVerifiableCredential() {
-		return LegalPersonVerifiableCredential.builder()
+	private static DataProducerVerifiableCredential getDataProducerVerifiableCredential() {
+		return DataProducerVerifiableCredential.builder()
 				.id("62b573deb33e417edcb34-id")
 				.issuer("62b573deb33e417ed-issuer")
 				.validFrom(LocalDate.of(2025, Month.FEBRUARY, 21).atTime(15, 38, 2).atZone(ZoneOffset.UTC))
 				.validUntil(LocalDate.of(2025, Month.MAY, 21).atTime(15, 38, 2).atZone(ZoneOffset.UTC))
-				.credentialSubject(LegalPersonCredentialSubject.builder()
+				.credentialSubject(DataProducerCredentialSubject.builder()
 						.id("62b573deb33e417e-company")
 						.name("Mercat de la Boqueria")
 						.registrationNumber(RegistrationNumber.builder()
@@ -80,16 +81,16 @@ class LegalPersonVerifiableCredentialTest {
 		assertThatJsonStringValue("$['@context'][1]", serializedVc).isEqualTo("https://w3id.org/gaia-x/development#");
 		assertThatJsonStringValue("$['@context'][2]['@base']", serializedVc).isEqualTo("https://dawex.com");
 
-		assertThatJsonListValue("$['type']", serializedVc).hasSize(2)
-				.contains("VerifiableCredential", "gx:LegalPerson");
+		assertThatJsonListValue("$['type']", serializedVc).hasSize(3)
+				.contains("VerifiableCredential", "gx:LegalPerson", "gx:DataProducer");
 		assertThatJsonStringValue("$['id']", serializedVc)
-				.isEqualTo("./legalPersons/62b573deb33e417edcb34-id/vc");
+				.isEqualTo("./dataProducers/62b573deb33e417edcb34-id/vc");
 		assertThatJsonStringValue("$['issuer']", serializedVc).isEqualTo("62b573deb33e417ed-issuer");
 		assertThatJsonStringValue("$['validFrom']", serializedVc).isEqualTo("2025-02-21T15:38:02Z");
 		assertThatJsonStringValue("$['validUntil']", serializedVc).isEqualTo("2025-05-21T15:38:02Z");
 
 		assertThatJsonStringValue("$['credentialSubject']['id']", serializedVc)
-				.isEqualTo("./legalPersons/62b573deb33e417e-company/cs");
+				.isEqualTo("./dataProducers/62b573deb33e417e-company/cs");
 		assertThatJsonStringValue("$['credentialSubject']['schema:name']", serializedVc)
 				.isEqualTo("Mercat de la Boqueria");
 		assertThatJsonStringValue("$['credentialSubject']['gx:registrationNumber']['type']", serializedVc)
