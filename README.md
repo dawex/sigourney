@@ -45,7 +45,7 @@ Dependency:
 <dependency>
     <groupId>com.dawex.sigourney</groupId>
     <artifactId>sigourney-verifiable-credentials-model</artifactId>
-    <version>2.0.2</version>
+    <version>2.0.3</version>
 </dependency>
 ```
 
@@ -235,7 +235,7 @@ final var verifiableCredential = LegalPersonVerifiableCredential.builder()
         .build();
 
 
-final var signatureHelper = new VerifiablePresentationSignatureHelper(objectMapper);
+final var signatureHelper = new VerifiablePresentationSignatureHelperV2(objectMapper);
 
 // Build and sign the verifiable presentation secured with JOSE; the verifiable credential is also secured with JOSE
 final var signedVp = signatureHelper.buildAndSignVerifiablePresentation(
