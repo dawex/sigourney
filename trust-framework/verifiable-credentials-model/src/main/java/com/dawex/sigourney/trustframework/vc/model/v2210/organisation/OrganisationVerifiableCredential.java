@@ -8,9 +8,9 @@ import com.dawex.sigourney.trustframework.vc.model.v2210.serialization.Format;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
-import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.GAIAX_TRUST_FRAMEWORK;
+import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.GAIAX_TRUST_FRAMEWORK_V1;
 import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.SECURITY_JWS_2020;
-import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.VERIFIABLE_CREDENTIALS;
+import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.VERIFIABLE_CREDENTIALS_V1;
 
 /**
  * @see <a href="https://www.w3.org/2018/credentials/v1">Verifiable Credential Schema</a>
@@ -18,9 +18,9 @@ import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.
 @JsonLdContexts(
 		addBaseContext = true,
 		referencedContexts = {
-				VERIFIABLE_CREDENTIALS,
+				VERIFIABLE_CREDENTIALS_V1,
 				SECURITY_JWS_2020,
-				GAIAX_TRUST_FRAMEWORK
+				GAIAX_TRUST_FRAMEWORK_V1
 		})
 @JsonLdType("VerifiableCredential")
 public class OrganisationVerifiableCredential {
@@ -34,14 +34,14 @@ public class OrganisationVerifiableCredential {
 	private final ZonedDateTime issuanceDate;
 
 	@JsonLdProperty(value = "credentialSubject")
-	private final OrganisationCredentialSubject organisationCredentialSubject;
+	private final OrganisationCredentialSubject credentialSubject;
 
 	public OrganisationVerifiableCredential(String id, String issuer, ZonedDateTime issuanceDate,
-			OrganisationCredentialSubject organisationCredentialSubject) {
+			OrganisationCredentialSubject credentialSubject) {
 		this.id = id;
 		this.issuer = issuer;
 		this.issuanceDate = issuanceDate;
-		this.organisationCredentialSubject = organisationCredentialSubject;
+		this.credentialSubject = credentialSubject;
 	}
 
 	public static OrganisationVerifiableCredentialBuilder builder() {
@@ -60,8 +60,8 @@ public class OrganisationVerifiableCredential {
 		return issuanceDate;
 	}
 
-	public OrganisationCredentialSubject getOrganisationCredentialSubject() {
-		return organisationCredentialSubject;
+	public OrganisationCredentialSubject getCredentialSubject() {
+		return credentialSubject;
 	}
 
 	@Override
@@ -76,12 +76,12 @@ public class OrganisationVerifiableCredential {
 		return Objects.equals(this.id, that.id) &&
 				Objects.equals(this.issuer, that.issuer) &&
 				Objects.equals(this.issuanceDate, that.issuanceDate) &&
-				Objects.equals(this.organisationCredentialSubject, that.organisationCredentialSubject);
+				Objects.equals(this.credentialSubject, that.credentialSubject);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, issuer, issuanceDate, organisationCredentialSubject);
+		return Objects.hash(id, issuer, issuanceDate, credentialSubject);
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class OrganisationVerifiableCredential {
 				"id=" + id + ", " +
 				"issuer=" + issuer + ", " +
 				"issuanceDate=" + issuanceDate + ", " +
-				"organisationCredentialSubject=" + organisationCredentialSubject + ']';
+				"organisationCredentialSubject=" + credentialSubject + ']';
 	}
 
 	public static class OrganisationVerifiableCredentialBuilder {

@@ -19,7 +19,7 @@ class JsonWebSignatureUtilsTest {
 	private static X509Certificate certificate;
 
 	@BeforeAll
-	public static void init() throws ParseException {
+	static void init() throws ParseException {
 		final JWKSet jwkSet = JWKSet.parse(Constant.JWK_SET);
 		jwk = jwkSet.getKeys().get(0);
 		certificate = X509CertUtils.parse(Constant.CERTIFICATE);
@@ -36,7 +36,7 @@ class JsonWebSignatureUtilsTest {
 	}
 
 	@Test
-	void withInvalidSignatureShouldReturnFalse() throws ParseException {
+	void withInvalidSignatureShouldReturnFalse() {
 		final String invalidSignature = "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..invalid-signature";
 
 		assertThat(JsonWebSignatureUtils.isSignatureValid(invalidSignature, Constant.JSON_LD, jwk.toPublicJWK())).isFalse();

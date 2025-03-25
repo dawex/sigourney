@@ -1,15 +1,17 @@
 package com.dawex.sigourney.trustframework.vc.model.v2210.serialization;
 
-import com.dawex.sigourney.trustframework.vc.core.Proof;
-import com.dawex.sigourney.trustframework.vc.core.SignedObject;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdContexts;
+import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdType;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.serialization.FormatProvider;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.serialization.JsonLdContextsSerializer;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.serialization.JsonLdSerializer;
+import com.dawex.sigourney.trustframework.vc.core.jsonld.serialization.JsonLdTypeSerializer;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.serialization.SignedObjectJsonLdSerializer;
+import com.dawex.sigourney.trustframework.vc.core.vc.signature.model.Proof;
+import com.dawex.sigourney.trustframework.vc.core.vc.signature.model.SignedObject;
+import com.dawex.sigourney.trustframework.vc.core.vc.v1.model.VerifiablePresentation;
 import com.dawex.sigourney.trustframework.vc.model.shared.Did;
 import com.dawex.sigourney.trustframework.vc.model.shared.JsonWebKey2020;
-import com.dawex.sigourney.trustframework.vc.model.shared.VerifiablePresentation;
 import com.dawex.sigourney.trustframework.vc.model.v2210.common.Address;
 import com.dawex.sigourney.trustframework.vc.model.v2210.dataproduct.AggregationOf;
 import com.dawex.sigourney.trustframework.vc.model.v2210.dataproduct.DataAccountExport;
@@ -17,12 +19,12 @@ import com.dawex.sigourney.trustframework.vc.model.v2210.dataproduct.DataProduct
 import com.dawex.sigourney.trustframework.vc.model.v2210.dataproduct.DataProductVerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.model.v2210.dataproduct.ProvidedBy;
 import com.dawex.sigourney.trustframework.vc.model.v2210.dataproduct.TermsAndConditionURI;
+import com.dawex.sigourney.trustframework.vc.model.v2210.dataresource.DataResourceCredentialSubject;
 import com.dawex.sigourney.trustframework.vc.model.v2210.dataresource.DataResourceVerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.model.v2210.dataresource.Distribution;
-import com.dawex.sigourney.trustframework.vc.model.v2210.dataresource.ProducedBy;
-import com.dawex.sigourney.trustframework.vc.model.v2210.dataresource.DataResourceCredentialSubject;
 import com.dawex.sigourney.trustframework.vc.model.v2210.dataresource.ExposedThrough;
 import com.dawex.sigourney.trustframework.vc.model.v2210.dataresource.Location;
+import com.dawex.sigourney.trustframework.vc.model.v2210.dataresource.ProducedBy;
 import com.dawex.sigourney.trustframework.vc.model.v2210.organisation.OrganisationCredentialSubject;
 import com.dawex.sigourney.trustframework.vc.model.v2210.organisation.OrganisationLegalRegistrationNumber;
 import com.dawex.sigourney.trustframework.vc.model.v2210.organisation.OrganisationVerifiableCredential;
@@ -85,6 +87,7 @@ public class JacksonModuleFactory {
 		domainClasses.forEach(clazz -> module.addSerializer(clazz, new JsonLdSerializer<>(clazz, formatProvider)));
 
 		module.addSerializer(JsonLdContexts.class, new JsonLdContextsSerializer(baseIriSupplier));
+		module.addSerializer(JsonLdType.class, new JsonLdTypeSerializer());
 		module.addSerializer(Proof.class, new JsonLdSerializer<>(Proof.class, formatProvider));
 		module.addSerializer(SignedObject.class, new SignedObjectJsonLdSerializer(formatProvider));
 		module.addSerializer(VerifiablePresentation.class, new JsonLdSerializer<>(VerifiablePresentation.class, formatProvider));
@@ -98,6 +101,7 @@ public class JacksonModuleFactory {
 	public static Module sharedSerializationModule(Supplier<String> baseIriSupplier) {
 		final SimpleModule module = new SimpleModule();
 		module.addSerializer(JsonLdContexts.class, new JsonLdContextsSerializer(baseIriSupplier));
+		module.addSerializer(JsonLdType.class, new JsonLdTypeSerializer());
 		module.addSerializer(Did.class, new JsonLdSerializer<>(Did.class));
 		module.addSerializer(JsonWebKey2020.class, new JsonLdSerializer<>(JsonWebKey2020.class));
 		return module;

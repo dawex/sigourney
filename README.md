@@ -33,7 +33,7 @@ It is based on the core library, and is the main entry point supposing there is 
 
 ### Maven
 
-The library is built using Java 17, which is the latest Java LTS version available.
+The library is built using Java 17, which is a Java LTS version that is still supported.
 
 Build:
 ```shell
@@ -45,7 +45,7 @@ Dependency:
 <dependency>
     <groupId>com.dawex.sigourney</groupId>
     <artifactId>sigourney-verifiable-credentials-model</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>2.0.0</version>
 </dependency>
 ```
 
@@ -65,7 +65,7 @@ final DefaultFormatProvider formatProvider = new DefaultFormatProvider();
 formatProvider.setFormat(Format.ORGANISATION_VERIFIABLE_CREDENTIAL, "./organisations/%s/verifiableCredential");
 ```
 
-The following format names are available:
+The following format names are available for Gaia-X v1 release (Tagus 22.10):
 
 | Format name | Applies to | Field | Description |
 | --- |--------------|-----------------------------------------|-------------------------------|
@@ -123,7 +123,7 @@ There are also utilities for :
 - loading existing private key and X.509 certificate, with `JwkSetUtils.importKeysAndCertificate`
 
 
-### Generate a verifiable credential
+### Generate a verifiable credential for Gaia-X v1 release (Tagus 22.10)
 
 With the configuration defined in the previous section, we can now serialize a verifiable credential POJO in JSON-LD, and add a proof 
  JWK (using the private key):
@@ -211,6 +211,41 @@ final var organisationVp = VerifiablePresentation.builder()
 final var serializedVp = objectMapper.writeValueAsString(organisationVp);
 ```
 
+### Generate a verifiable credential for Gaia-X v2 release (Loire 24.11)
+
+With the configuration defined above, we can now serialize verifiable credential POJOs in JSON-LD, and then secure them with JOSE (JSON Object Signing and Encryption).
+
+Verifiable credentials can be secured individually, or a verifiable presentation can be created and secured directly from a list of verifiable credentials.
+
+```java
+// Build the verifiableCredential POJO
+final var verifiableCredential = LegalPersonVerifiableCredential.builder()
+        .id("6f77c1344-8b25-4a9a-b0ae-ebe9bd2af61d")
+        .issuer("4f21b0c9-63f2-4c5d-88db-239e2389687a")
+        .validFrom(ZonedDateTime.now(ZoneOffset.UTC))
+        .validUntil(ZonedDateTime.now(ZoneOffset.UTC).plusDays(90))
+        .credentialSubject(LegalPersonCredentialSubject.builder()
+                        .id("640cf1a8-f43d-4b2b-822e-8770585e2182")
+                        .name("My Company")
+                        .registrationNumber(RegistrationNumber.builder()
+                                .id("1234567890")
+                                .build())
+                        // ...
+                        .build())
+        .build();
+
+
+final var signatureHelper = new VerifiablePresentationSignatureHelper(objectMapper);
+
+// Build and sign the verifiable presentation secured with JOSE; the verifiable credential is also secured with JOSE
+final var signedVp = signatureHelper.buildAndSignVerifiablePresentation(
+        List.of(verifiableCredential), null, issuerDid, jwk);
+
+// Build a verifiable presentation containing the verifiable credential secured with JOSE
+final var vp = new VerifiablePresentation(List.of(
+        signatureHelper.signVerifiableCredential(verifiableCredential, issuerDid, jwk)
+));
+```
 
 ## Contributing
 

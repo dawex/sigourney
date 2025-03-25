@@ -14,6 +14,7 @@ import com.dawex.sigourney.trustframework.vc.core.jose.exception.SignatureExcept
 import com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext;
 import com.nimbusds.jose.HeaderParameterNames;
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
@@ -53,13 +54,55 @@ public class JsonWebSignatureUtils {
 	 */
 	private static final Map<String, String> PRELOADED_CONTEXT = Map.of(
 			ExternalContext.DID, "/jsonld-contexts/w3org-did-v1.json",
-			ExternalContext.GAIAX_TRUST_FRAMEWORK, "/jsonld-contexts/gaiax-trustframework-v1.json",
+			ExternalContext.GAIAX_TRUST_FRAMEWORK_V1, "/jsonld-contexts/gaiax-trustframework-v1.json",
 			ExternalContext.SECURITY_JWS_2020, "/jsonld-contexts/w3c-vc-jws-20020-v1.json",
-			ExternalContext.VERIFIABLE_CREDENTIALS, "/jsonld-contexts/w3org-2018-credentials-v1.json"
+			ExternalContext.VERIFIABLE_CREDENTIALS_V1, "/jsonld-contexts/w3org-2018-credentials-v1.json"
 	);
 
 	private JsonWebSignatureUtils() {
 		// no instance allowed
+	}
+
+	/**
+	 * Sign the payload using the provided JSON Web Key
+	 */
+	public static String signWithJWS(String payload, String contentType, String issuer, JWK jwk) {
+		try {
+			final JWSObject jwsObject = new JWSObject(
+					new JWSHeader.Builder(JWS_ALGORITHM)
+							.type(new JOSEObjectType(contentType + "+jwt"))
+							.contentType(contentType)
+							.keyID(issuer + "#" + jwk.getKeyID())
+							.customParam(HeaderParameterNames.ISSUER, issuer)
+							.build(),
+					new Payload(payload));
+
+			final RSASSASigner signer = new RSASSASigner((RSAKey) jwk);
+			jwsObject.sign(signer);
+
+			return jwsObject.serialize();
+		} catch (JOSEException e) {
+			throw new SignatureException(e);
+		}
+	}
+
+	/**
+	 * Verify the JWS signature, and return the payload if it is valid
+	 */
+	public static Map<String, Object> verifyJWS(String jws, JWK jwk) {
+		try {
+			final JWSObject jwsObject = JWSObject.parse(jws);
+
+			final RSASSAVerifier verifier = new RSASSAVerifier((RSAKey) jwk);
+			if (!jwsObject.verify(verifier)) {
+				throw new SignatureException("Signature verification failed");
+			}
+
+			return jwsObject.getPayload().toJSONObject();
+
+		} catch (JOSEException | ParseException e) {
+			throw new SignatureException(e);
+		}
 	}
 
 	/**

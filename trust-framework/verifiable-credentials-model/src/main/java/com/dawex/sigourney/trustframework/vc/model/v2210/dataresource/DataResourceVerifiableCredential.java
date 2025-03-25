@@ -9,9 +9,9 @@ import com.dawex.sigourney.trustframework.vc.model.v2210.Namespace;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
-import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.GAIAX_TRUST_FRAMEWORK;
+import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.GAIAX_TRUST_FRAMEWORK_V1;
 import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.SECURITY_JWS_2020;
-import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.VERIFIABLE_CREDENTIALS;
+import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.VERIFIABLE_CREDENTIALS_V1;
 import static com.dawex.sigourney.trustframework.vc.model.v2210.serialization.Format.DATA_RESOURCE_ISSUER;
 import static com.dawex.sigourney.trustframework.vc.model.v2210.serialization.Format.DATA_RESOURCE_VERIFIABLE_CREDENTIAL;
 
@@ -21,9 +21,9 @@ import static com.dawex.sigourney.trustframework.vc.model.v2210.serialization.Fo
 				@JsonLdEmbeddedContext(term = Namespace.DAWEX_NS, iri = Namespace.DAWEX_IRI)
 		},
 		referencedContexts = {
-				VERIFIABLE_CREDENTIALS,
+				VERIFIABLE_CREDENTIALS_V1,
 				SECURITY_JWS_2020,
-				GAIAX_TRUST_FRAMEWORK
+				GAIAX_TRUST_FRAMEWORK_V1
 		})
 @JsonLdType("VerifiableCredential")
 public class DataResourceVerifiableCredential {
@@ -37,14 +37,14 @@ public class DataResourceVerifiableCredential {
 	private final ZonedDateTime issuanceDate;
 
 	@JsonLdProperty(value = "credentialSubject")
-	private final DataResourceCredentialSubject dataResourceCredentialSubject;
+	private final DataResourceCredentialSubject credentialSubject;
 
 	public DataResourceVerifiableCredential(String id, String issuer, ZonedDateTime issuanceDate,
-			DataResourceCredentialSubject dataResourceCredentialSubject) {
+			DataResourceCredentialSubject credentialSubject) {
 		this.id = id;
 		this.issuer = issuer;
 		this.issuanceDate = issuanceDate;
-		this.dataResourceCredentialSubject = dataResourceCredentialSubject;
+		this.credentialSubject = credentialSubject;
 	}
 
 	public static DataResourceVerifiableCredentialBuilder builder() {
@@ -63,8 +63,8 @@ public class DataResourceVerifiableCredential {
 		return issuanceDate;
 	}
 
-	public DataResourceCredentialSubject getDataResourceCredentialSubject() {
-		return dataResourceCredentialSubject;
+	public DataResourceCredentialSubject getCredentialSubject() {
+		return credentialSubject;
 	}
 
 	@Override
@@ -78,12 +78,12 @@ public class DataResourceVerifiableCredential {
 		DataResourceVerifiableCredential that = (DataResourceVerifiableCredential) o;
 		return Objects.equals(id, that.id) && Objects.equals(issuer, that.issuer) &&
 				Objects.equals(issuanceDate, that.issuanceDate) &&
-				Objects.equals(dataResourceCredentialSubject, that.dataResourceCredentialSubject);
+				Objects.equals(credentialSubject, that.credentialSubject);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, issuer, issuanceDate, dataResourceCredentialSubject);
+		return Objects.hash(id, issuer, issuanceDate, credentialSubject);
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class DataResourceVerifiableCredential {
 				"id='" + id + '\'' +
 				", issuer='" + issuer + '\'' +
 				", issuanceDate=" + issuanceDate +
-				", dataResourceCredentialSubject=" + dataResourceCredentialSubject +
+				", dataResourceCredentialSubject=" + credentialSubject +
 				'}';
 	}
 

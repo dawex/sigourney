@@ -10,9 +10,9 @@ import com.dawex.sigourney.trustframework.vc.model.v2210.Namespace;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
-import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.GAIAX_TRUST_FRAMEWORK;
+import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.GAIAX_TRUST_FRAMEWORK_V1;
 import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.SECURITY_JWS_2020;
-import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.VERIFIABLE_CREDENTIALS;
+import static com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext.VERIFIABLE_CREDENTIALS_V1;
 import static com.dawex.sigourney.trustframework.vc.model.v2210.serialization.Format.DATA_PRODUCT_ISSUER;
 import static com.dawex.sigourney.trustframework.vc.model.v2210.serialization.Format.DATA_PRODUCT_VERIFIABLE_CREDENTIAL;
 
@@ -25,9 +25,9 @@ import static com.dawex.sigourney.trustframework.vc.model.v2210.serialization.Fo
 				@JsonLdEmbeddedContext(term = Namespace.DC_TERMS_NS, iri = Namespace.DC_TERMS_IRI),
 		},
 		referencedContexts = {
-				VERIFIABLE_CREDENTIALS,
+				VERIFIABLE_CREDENTIALS_V1,
 				SECURITY_JWS_2020,
-				GAIAX_TRUST_FRAMEWORK
+				GAIAX_TRUST_FRAMEWORK_V1
 		})
 @JsonLdType("VerifiableCredential")
 public class DataProductVerifiableCredential {

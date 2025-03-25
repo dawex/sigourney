@@ -1,13 +1,12 @@
 package com.dawex.sigourney.trustframework.vc.model.v2210.dataproduct;
 
-import com.dawex.sigourney.trustframework.vc.core.jsonld.serialization.FormatProvider;
 import com.dawex.sigourney.trustframework.vc.model.shared.DefaultFormatProvider;
 import com.dawex.sigourney.trustframework.vc.model.v2210.serialization.Format;
 import com.dawex.sigourney.trustframework.vc.model.v2210.serialization.JacksonModuleFactory;
-import com.dawex.sigourney.trustframework.vc.model.v2210.AbstractVerifiableCredentialTest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -18,26 +17,44 @@ import java.util.List;
 import static com.dawex.sigourney.trustframework.vc.model.utils.TestUtils.assertThatJsonListValue;
 import static com.dawex.sigourney.trustframework.vc.model.utils.TestUtils.assertThatJsonStringValue;
 
-class DataProductVerifiableCredentialTest extends AbstractVerifiableCredentialTest {
+class DataProductVerifiableCredentialTest {
+
+	private static ObjectMapper objectMapper;
+
+	@BeforeAll
+	static void init() {
+		final DefaultFormatProvider formatProvider = new DefaultFormatProvider();
+		formatProvider.setFormat(Format.DATA_PRODUCT_AGGREGATION_OF, "./dataResource/%s");
+		formatProvider.setFormat(Format.DATA_PRODUCT_CREDENTIAL_SUBJECT, "./dataOfferings/%s");
+		formatProvider.setFormat(Format.DATA_PRODUCT_ISSUER, "./organisations/%s");
+		formatProvider.setFormat(Format.DATA_PRODUCT_PROVIDED_BY, "./organisations/%s");
+		formatProvider.setFormat(Format.DATA_PRODUCT_TERMS_AND_CONDITIONS_URI, "./termsAndConditions/%s");
+		formatProvider.setFormat(Format.DATA_PRODUCT_VERIFIABLE_CREDENTIAL,
+				"./api/secure/participant/organisations/%s/dataOfferings/%s/verifiableCredential");
+
+		objectMapper = new ObjectMapper();
+		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+		objectMapper.registerModule(JacksonModuleFactory.dataProductSerializationModule(formatProvider, () -> "https://dawex.com"));
+	}
 
 	@Test
 	void shouldGenerateValidVerifiableCredentialForDataProduct() throws JsonProcessingException {
 		// given
 		final var verifiableCredential = getDataProductVerifiableCredential();
-
 		// when
-		final String serializedVc = serializeVc(verifiableCredential);
-
+		final String serializedVc = objectMapper.writeValueAsString(verifiableCredential);
 		// then
-		assertThatProofIsValid(serializedVc);
+		assertThatClaimsAreValid(serializedVc);
+	}
 
+	private static void assertThatClaimsAreValid(String serializedVc) {
 		assertThatJsonListValue("$['@context']", serializedVc).hasSize(4);
-		assertThatJsonStringValue("$['@context'][0]['@base']", serializedVc).isEqualTo("https://dawex.com");
-		assertThatJsonStringValue("$['@context'][0]['dct']", serializedVc).isEqualTo("http://purl.org/dc/terms/");
-		assertThatJsonStringValue("$['@context'][1]", serializedVc).isEqualTo("https://www.w3.org/2018/credentials/v1");
-		assertThatJsonStringValue("$['@context'][2]", serializedVc).isEqualTo("https://w3id.org/security/suites/jws-2020/v1");
-		assertThatJsonStringValue("$['@context'][3]", serializedVc).isEqualTo(
+		assertThatJsonStringValue("$['@context'][0]", serializedVc).isEqualTo("https://www.w3.org/2018/credentials/v1");
+		assertThatJsonStringValue("$['@context'][1]", serializedVc).isEqualTo("https://w3id.org/security/suites/jws-2020/v1");
+		assertThatJsonStringValue("$['@context'][2]", serializedVc).isEqualTo(
 				"https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#");
+		assertThatJsonStringValue("$['@context'][3]['@base']", serializedVc).isEqualTo("https://dawex.com");
+		assertThatJsonStringValue("$['@context'][3]['dct']", serializedVc).isEqualTo("http://purl.org/dc/terms/");
 
 		assertThatJsonStringValue("$['type']", serializedVc).isEqualTo("VerifiableCredential");
 		assertThatJsonStringValue("$['id']", serializedVc)
@@ -106,25 +123,5 @@ class DataProductVerifiableCredentialTest extends AbstractVerifiableCredentialTe
 						))
 						.build())
 				.build();
-	}
-
-	@Override
-	protected ObjectMapper getObjectMapper() {
-		final var objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-		objectMapper.registerModule(JacksonModuleFactory.dataProductSerializationModule(getFormatProvider(), () -> "https://dawex.com"));
-		return objectMapper;
-	}
-
-	private static FormatProvider getFormatProvider() {
-		final DefaultFormatProvider formatProvider = new DefaultFormatProvider();
-		formatProvider.setFormat(Format.DATA_PRODUCT_AGGREGATION_OF, "./dataResource/%s");
-		formatProvider.setFormat(Format.DATA_PRODUCT_CREDENTIAL_SUBJECT, "./dataOfferings/%s");
-		formatProvider.setFormat(Format.DATA_PRODUCT_ISSUER, "./organisations/%s");
-		formatProvider.setFormat(Format.DATA_PRODUCT_PROVIDED_BY, "./organisations/%s");
-		formatProvider.setFormat(Format.DATA_PRODUCT_TERMS_AND_CONDITIONS_URI, "./termsAndConditions/%s");
-		formatProvider.setFormat(Format.DATA_PRODUCT_VERIFIABLE_CREDENTIAL,
-				"./api/secure/participant/organisations/%s/dataOfferings/%s/verifiableCredential");
-		return formatProvider;
 	}
 }
