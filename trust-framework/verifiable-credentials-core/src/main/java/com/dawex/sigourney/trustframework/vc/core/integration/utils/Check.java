@@ -24,7 +24,7 @@ public class Check {
 		return new Check(() -> Objects.nonNull(value) && !value.isEmpty());
 	}
 
-	public void orThrowWithMessage(String message) {
+	public void orThrowWithMessage(String message) throws NotaryServiceException {
 		if (Boolean.FALSE.equals(condition.get())) {
 			throw new NotaryServiceException(message);
 		}

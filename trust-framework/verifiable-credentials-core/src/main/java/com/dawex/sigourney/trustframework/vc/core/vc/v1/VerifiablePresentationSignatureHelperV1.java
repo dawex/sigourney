@@ -11,11 +11,11 @@ import com.nimbusds.jose.jwk.JWK;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class VerifiablePresentationSignatureHelper {
+public class VerifiablePresentationSignatureHelperV1 {
 
 	private final ObjectMapper objectMapper;
 
-	public VerifiablePresentationSignatureHelper(ObjectMapper objectMapper) {
+	public VerifiablePresentationSignatureHelperV1(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
 	}
 

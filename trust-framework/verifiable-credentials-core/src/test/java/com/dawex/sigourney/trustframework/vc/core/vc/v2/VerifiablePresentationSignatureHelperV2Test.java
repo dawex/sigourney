@@ -32,21 +32,21 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.dawex.sigourney.trustframework.vc.core.vc.v2.VerifiablePresentationSignatureHelper.CONTENT_TYPE_VC_LD_JSON;
-import static com.dawex.sigourney.trustframework.vc.core.vc.v2.VerifiablePresentationSignatureHelper.CONTENT_TYPE_VP_LD_JSON;
-import static com.dawex.sigourney.trustframework.vc.core.vc.v2.VerifiablePresentationSignatureHelper.MEDIA_TYPE_VC_JWT;
+import static com.dawex.sigourney.trustframework.vc.core.vc.v2.VerifiablePresentationSignatureHelperV2.CONTENT_TYPE_VC_LD_JSON;
+import static com.dawex.sigourney.trustframework.vc.core.vc.v2.VerifiablePresentationSignatureHelperV2.CONTENT_TYPE_VP_LD_JSON;
+import static com.dawex.sigourney.trustframework.vc.core.vc.v2.VerifiablePresentationSignatureHelperV2.MEDIA_TYPE_VC_JWT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
 
-public class VerifiablePresentationSignatureHelperTest {
+public class VerifiablePresentationSignatureHelperV2Test {
 
 	private static final String VC_ID_PREFIX = "data:%s,".formatted(MEDIA_TYPE_VC_JWT);
 
-	private final VerifiablePresentationSignatureHelper verifiablePresentationSignatureHelper;
+	private final VerifiablePresentationSignatureHelperV2 verifiablePresentationSignatureHelper;
 
-	public VerifiablePresentationSignatureHelperTest() {
+	public VerifiablePresentationSignatureHelperV2Test() {
 		final ObjectMapper objectMapper = getObjectMapper();
-		verifiablePresentationSignatureHelper = new VerifiablePresentationSignatureHelper(objectMapper);
+		verifiablePresentationSignatureHelper = new VerifiablePresentationSignatureHelperV2(objectMapper);
 	}
 
 	@Nested
