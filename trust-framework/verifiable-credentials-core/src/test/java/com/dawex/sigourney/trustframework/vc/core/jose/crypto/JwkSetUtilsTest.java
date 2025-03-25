@@ -1,23 +1,39 @@
-package com.dawex.sigourney.trustframework.vc.core.jose;
+package com.dawex.sigourney.trustframework.vc.core.jose.crypto;
 
-import com.dawex.sigourney.trustframework.vc.core.Constant;
 import com.dawex.sigourney.trustframework.vc.core.jose.exception.KeyCreationException;
 import com.dawex.sigourney.trustframework.vc.core.jose.exception.MissingCertificateException;
+import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.Payload;
+import com.nimbusds.jose.crypto.ECDSASigner;
+import com.nimbusds.jose.crypto.ECDSAVerifier;
+import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.jwk.AsymmetricJWK;
+import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.KeyType;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.X509CertUtils;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemWriter;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
-import javax.crypto.Cipher;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
+import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
@@ -27,6 +43,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
 
 class JwkSetUtilsTest {
 
@@ -60,9 +77,14 @@ class JwkSetUtilsTest {
 			-----END CERTIFICATE-----
 			""";
 
+	@BeforeAll
+	static void init() {
+		Security.addProvider(new BouncyCastleProvider());
+	}
+
 	@Test
-	void shouldParseJwkSet() throws ParseException {
-		final JWKSet jwkSet = JWKSet.parse(Constant.JWK_SET);
+	void shouldParseJwkSet() {
+		final JWKSet jwkSet = JwkSetUtils.createKeysWithSelfSignedCertificate(JwkSetUtils.KeyAlgorithm.RSA_2048, null, "Test", 12).jwkSet();
 		final Map<String, Object> jwkSetAsMap = jwkSet.toJSONObject(false);
 		final String expectedJwkSet = jwkSet.toString(false);
 
@@ -72,18 +94,21 @@ class JwkSetUtilsTest {
 				.isEqualTo(expectedJwkSet);
 	}
 
-	@Test
-	void shouldCreateKeysWithSelfSignedCertificate() throws GeneralSecurityException, JOSEException {
+	@ParameterizedTest
+	@EnumSource(JwkSetUtils.KeyAlgorithm.class)
+	void shouldCreateKeysWithSelfSignedCertificate(JwkSetUtils.KeyAlgorithm keyAlgorithm) throws JOSEException, ParseException {
 		final JwkSetUtils.CreatedKeys keys = JwkSetUtils.createKeysWithSelfSignedCertificate(
-				CERT_BASE_URL, CERT_COMMON_NAME, CERT_VALIDITY_IN_MONTHS);
+				keyAlgorithm, CERT_BASE_URL, CERT_COMMON_NAME, CERT_VALIDITY_IN_MONTHS);
 
-		assertThatCreatedKeysAreValid(keys);
+		assertThatCreatedKeysAreValid(keys, keyAlgorithm);
 	}
 
-	@Test
-	void shouldImportKeysWithSelfSignedCertificate() throws JOSEException, IOException, GeneralSecurityException {
+	@ParameterizedTest
+	@EnumSource(JwkSetUtils.KeyAlgorithm.class)
+	void shouldImportKeysWithSelfSignedCertificate(JwkSetUtils.KeyAlgorithm keyAlgorithm)
+			throws JOSEException, IOException, ParseException {
 		final JwkSetUtils.CreatedKeys referenceKeys = JwkSetUtils.createKeysWithSelfSignedCertificate(
-				CERT_BASE_URL, CERT_COMMON_NAME, CERT_VALIDITY_IN_MONTHS);
+				keyAlgorithm, CERT_BASE_URL, CERT_COMMON_NAME, CERT_VALIDITY_IN_MONTHS);
 
 		final String privateKeyPem = getPrivateKeyPem(referenceKeys);
 		final JwkSetUtils.CreatedKeys keys;
@@ -92,13 +117,14 @@ class JwkSetUtilsTest {
 					inputStream, CERT_BASE_URL, CERT_COMMON_NAME, CERT_VALIDITY_IN_MONTHS);
 		}
 
-		assertThatCreatedKeysAreValid(keys);
+		assertThatCreatedKeysAreValid(keys, keyAlgorithm);
 	}
 
-	@Test
-	void shouldImportKeysAndCertificate() throws JOSEException, IOException, GeneralSecurityException {
+	@ParameterizedTest
+	@EnumSource(JwkSetUtils.KeyAlgorithm.class)
+	void shouldImportKeysAndCertificate(JwkSetUtils.KeyAlgorithm keyAlgorithm) throws JOSEException, IOException, ParseException {
 		final JwkSetUtils.CreatedKeys referenceKeys = JwkSetUtils.createKeysWithSelfSignedCertificate(
-				CERT_BASE_URL, CERT_COMMON_NAME, CERT_VALIDITY_IN_MONTHS);
+				keyAlgorithm, CERT_BASE_URL, CERT_COMMON_NAME, CERT_VALIDITY_IN_MONTHS);
 
 		final String privateKeyPem = getPrivateKeyPem(referenceKeys);
 		final String certificatePem = referenceKeys.certificates().get(0);
@@ -109,7 +135,7 @@ class JwkSetUtilsTest {
 			keys = JwkSetUtils.importKeysAndCertificate(privateKeyInputStream, certificateInputStream, CERT_BASE_URL);
 		}
 
-		assertThatCreatedKeysAreValid(keys);
+		assertThatCreatedKeysAreValid(keys, keyAlgorithm);
 	}
 
 	@Test
@@ -143,8 +169,8 @@ class JwkSetUtilsTest {
 	}
 
 	private static String getPrivateKeyPem(JwkSetUtils.CreatedKeys referenceKeys) throws JOSEException, IOException {
-		final RSAKey rsaKey = referenceKeys.jwkSet().getKeys().get(0).toRSAKey();
-		final PemObject pemObject = new PemObject("PRIVATE KEY", rsaKey.toPrivateKey().getEncoded());
+		final JWK jwk = referenceKeys.jwkSet().getKeys().get(0);
+		final PemObject pemObject = new PemObject("PRIVATE KEY", ((AsymmetricJWK) jwk).toPrivateKey().getEncoded());
 
 		final StringWriter stringWriter = new StringWriter();
 		try (final PemWriter pemWriter = new PemWriter(stringWriter)) {
@@ -156,17 +182,19 @@ class JwkSetUtilsTest {
 		return pemString;
 	}
 
-	private static void assertThatCreatedKeysAreValid(JwkSetUtils.CreatedKeys keys) throws GeneralSecurityException, JOSEException {
+	private static void assertThatCreatedKeysAreValid(JwkSetUtils.CreatedKeys keys, JwkSetUtils.KeyAlgorithm keyAlgorithm)
+			throws JOSEException, ParseException {
 		final List<JWK> jwks = keys.jwkSet().getKeys();
 		assertThat(jwks).hasSize(1);
 
 		final JWK jwk = jwks.get(0);
+		assertThat(jwk.getKeyType()).isEqualTo(getExpectedKeyType(keyAlgorithm));
+		assertThat(jwk.getAlgorithm()).isNotNull()
+				.extracting(Algorithm::getName).isEqualTo(getExpectedAlgorithmName(keyAlgorithm));
+		assertThat(jwk.size()).isEqualTo(getExpectedKeySize(keyAlgorithm));
+		assertThat(jwk.getKeyID()).isNotEmpty();
 		assertThat(jwk.isPrivate()).isTrue();
-
-		final RSAKey rsaKey = jwk.toRSAKey();
-		assertThat(rsaKey.getKeyID()).isNotEmpty();
-		assertThat(rsaKey.isPrivate()).isTrue();
-		assertThat(rsaKey.getX509CertURL()).hasToString(CERT_BASE_URL.formatted(rsaKey.getKeyID()));
+		assertThat(jwk.getX509CertURL()).hasToString(CERT_BASE_URL.formatted(jwk.getKeyID()));
 
 		final List<String> certificates = keys.certificates();
 		assertThat(certificates).hasSize(1);
@@ -177,23 +205,89 @@ class JwkSetUtilsTest {
 		assertThatNoException().isThrownBy(certificate::checkValidity);
 
 		// Verifies that this certificate was signed using the private key that corresponds to the specified public key.
-		assertThatNoException().isThrownBy(() -> certificate.verify(rsaKey.toPublicKey()));
+		assertThat(jwk).isInstanceOf(AsymmetricJWK.class);
+		assertThatNoException().isThrownBy(() -> certificate.verify(((AsymmetricJWK) jwk).toPublicKey()));
 
 		// Checks that messages encrypted with the private key can be decrypted with the public key
-		assertThatCanEncryptAndDecrypt(rsaKey);
+		assertThatCanSignAndValidate(jwk);
 	}
 
-	private static void assertThatCanEncryptAndDecrypt(RSAKey rsaKey) throws GeneralSecurityException, JOSEException {
+	private static KeyType getExpectedKeyType(JwkSetUtils.KeyAlgorithm keyAlgorithm) {
+		return switch (keyAlgorithm) {
+			case P_256, P_384, P_521 -> KeyType.EC;
+			case RSA_2048, RSA_3072, RSA_4096 -> KeyType.RSA;
+		};
+	}
+
+	private static String getExpectedAlgorithmName(JwkSetUtils.KeyAlgorithm keyAlgorithm) {
+		return (switch (keyAlgorithm) {
+			case P_256 -> JWSAlgorithm.ES256;
+			case P_384 -> JWSAlgorithm.ES384;
+			case P_521 -> JWSAlgorithm.ES512;
+			case RSA_2048 -> JWSAlgorithm.PS256;
+			case RSA_3072 -> JWSAlgorithm.PS384;
+			case RSA_4096 -> JWSAlgorithm.PS512;
+		}).getName();
+	}
+
+	private static Integer getExpectedKeySize(JwkSetUtils.KeyAlgorithm keyAlgorithm) {
+		return switch (keyAlgorithm) {
+			case P_256 -> 256;
+			case P_384 -> 384;
+			case P_521 -> 521;
+			case RSA_2048 -> 2048;
+			case RSA_3072 -> 3072;
+			case RSA_4096 -> 4096;
+		};
+	}
+
+	private static void assertThatCanSignAndValidate(JWK jwk) throws JOSEException, ParseException {
+		if (jwk.getKeyType() == KeyType.EC) {
+			assertThatCanSignAndValidate((ECKey) jwk);
+		} else if (jwk.getKeyType() == KeyType.RSA) {
+			assertThatCanSignAndValidate((RSAKey) jwk);
+		} else {
+			fail("Tests for KeyType [%s] not implemented".formatted(jwk.getKeyType()));
+		}
+	}
+
+	private static void assertThatCanSignAndValidate(ECKey ecKey) throws JOSEException, ParseException {
 		final String message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+		final JWSObject jwsObject = new JWSObject(
+				new JWSHeader.Builder((JWSAlgorithm) ecKey.getAlgorithm()).keyID(ecKey.getKeyID()).build(),
+				new Payload(message.getBytes(StandardCharsets.UTF_8))
+		);
 
-		Cipher cipher = Cipher.getInstance("RSA");
-		cipher.init(Cipher.ENCRYPT_MODE, rsaKey.toPrivateKey());
-		byte[] encryptedBytes = cipher.doFinal(message.getBytes(StandardCharsets.UTF_8));
+		// Sign JWS
+		final JWSSigner signer = new ECDSASigner(ecKey);
+		jwsObject.sign(signer);
+		final String serialized = jwsObject.serialize();
 
-		cipher = Cipher.getInstance("RSA");
-		cipher.init(Cipher.DECRYPT_MODE, rsaKey.toPublicKey());
-		byte[] result = cipher.doFinal(encryptedBytes);
+		// Validate JWS
+		final JWSObject parsedJws = JWSObject.parse(serialized);
+		final JWSVerifier verifier = new ECDSAVerifier(ecKey.toPublicJWK());
 
-		assertThat(new String(result, StandardCharsets.UTF_8)).isEqualTo(message);
+		assertThat(parsedJws.verify(verifier)).isTrue();
+		assertThat(parsedJws.getPayload()).hasToString(message);
+	}
+
+	private static void assertThatCanSignAndValidate(RSAKey rsaKey) throws JOSEException, ParseException {
+		final String message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+		final JWSObject jwsObject = new JWSObject(
+				new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(rsaKey.getKeyID()).build(),
+				new Payload(message.getBytes(StandardCharsets.UTF_8))
+		);
+
+		// Sign JWS
+		final JWSSigner signer = new RSASSASigner(rsaKey);
+		jwsObject.sign(signer);
+		final String serialized = jwsObject.serialize();
+
+		// Validate JWS
+		final JWSObject parsedJws = JWSObject.parse(serialized);
+		final JWSVerifier verifier = new RSASSAVerifier(rsaKey.toPublicJWK());
+
+		assertThat(parsedJws.verify(verifier)).isTrue();
+		assertThat(parsedJws.getPayload()).hasToString(message);
 	}
 }

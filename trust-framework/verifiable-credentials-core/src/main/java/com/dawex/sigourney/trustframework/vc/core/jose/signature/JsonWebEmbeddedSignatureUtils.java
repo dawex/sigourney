@@ -1,4 +1,4 @@
-package com.dawex.sigourney.trustframework.vc.core.jose;
+package com.dawex.sigourney.trustframework.vc.core.jose.signature;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
@@ -14,15 +14,12 @@ import com.dawex.sigourney.trustframework.vc.core.jose.exception.SignatureExcept
 import com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext;
 import com.nimbusds.jose.HeaderParameterNames;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JOSEObjectType;
-import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.Payload;
-import com.nimbusds.jose.crypto.RSASSASigner;
-import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.RSAKey;
 import io.setl.rdf.normalization.RdfNormalize;
 
 import java.io.IOException;
@@ -34,17 +31,19 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Utility class for generating and validating a signature for a JSON-LD document
- */
-public class JsonWebSignatureUtils {
+import static com.dawex.sigourney.trustframework.vc.core.jose.signature.JwsUtils.getJWSSigner;
+import static com.dawex.sigourney.trustframework.vc.core.jose.signature.JwsUtils.getJWSVerifier;
+import static com.dawex.sigourney.trustframework.vc.core.jose.signature.JwsUtils.getJwsAlgorithm;
 
-	public static final JWSAlgorithm JWS_ALGORITHM = JWSAlgorithm.PS256;
+/**
+ * Utility class for generating and validating a signature for a JSON-LD document.
+ * It provides an embedded proof mechanism, where the proof (signature) is included in the serialization of the document.
+ */
+public class JsonWebEmbeddedSignatureUtils {
 
 	private static final String HASH_ALGORITHM_SHA256 = "SHA-256";
 
@@ -59,50 +58,8 @@ public class JsonWebSignatureUtils {
 			ExternalContext.VERIFIABLE_CREDENTIALS_V1, "/jsonld-contexts/w3org-2018-credentials-v1.json"
 	);
 
-	private JsonWebSignatureUtils() {
+	JsonWebEmbeddedSignatureUtils() {
 		// no instance allowed
-	}
-
-	/**
-	 * Sign the payload using the provided JSON Web Key
-	 */
-	public static String signWithJWS(String payload, String contentType, String issuer, JWK jwk) {
-		try {
-			final JWSObject jwsObject = new JWSObject(
-					new JWSHeader.Builder(JWS_ALGORITHM)
-							.type(new JOSEObjectType(contentType + "+jwt"))
-							.contentType(contentType)
-							.keyID(issuer + "#" + jwk.getKeyID())
-							.customParam(HeaderParameterNames.ISSUER, issuer)
-							.build(),
-					new Payload(payload));
-
-			final RSASSASigner signer = new RSASSASigner((RSAKey) jwk);
-			jwsObject.sign(signer);
-
-			return jwsObject.serialize();
-		} catch (JOSEException e) {
-			throw new SignatureException(e);
-		}
-	}
-
-	/**
-	 * Verify the JWS signature, and return the payload if it is valid
-	 */
-	public static Map<String, Object> verifyJWS(String jws, JWK jwk) {
-		try {
-			final JWSObject jwsObject = JWSObject.parse(jws);
-
-			final RSASSAVerifier verifier = new RSASSAVerifier((RSAKey) jwk);
-			if (!jwsObject.verify(verifier)) {
-				throw new SignatureException("Signature verification failed");
-			}
-
-			return jwsObject.getPayload().toJSONObject();
-
-		} catch (JOSEException | ParseException e) {
-			throw new SignatureException(e);
-		}
 	}
 
 	/**
@@ -132,7 +89,7 @@ public class JsonWebSignatureUtils {
 	 */
 	public static boolean isSignatureValid(String signature, String jsonLd, JWK jwk) {
 		try {
-			final RSASSAVerifier verifier = new RSASSAVerifier((RSAKey) jwk);
+			final JWSVerifier verifier = getJWSVerifier(jwk);
 			return verifySignature(jsonLd, signature, verifier);
 
 		} catch (JsonLdError | IOException | RdfWriterException | UnsupportedContentException | NoSuchAlgorithmException | ParseException |
@@ -151,7 +108,7 @@ public class JsonWebSignatureUtils {
 	 */
 	public static boolean isSignatureValid(String signature, String jsonLd, X509Certificate certificate) {
 		try {
-			final RSASSAVerifier verifier = new RSASSAVerifier((RSAPublicKey) certificate.getPublicKey());
+			final JWSVerifier verifier = getJWSVerifier(certificate);
 			return verifySignature(jsonLd, signature, verifier);
 
 		} catch (JsonLdError | IOException | RdfWriterException | UnsupportedContentException | NoSuchAlgorithmException | ParseException |
@@ -190,7 +147,7 @@ public class JsonWebSignatureUtils {
 		options.setDocumentCache(new LruCache<>(32));
 
 		PRELOADED_CONTEXT.forEach((contextName, contextResource) -> {
-			try (final InputStream inputStream = JsonWebSignatureUtils.class.getResourceAsStream(contextResource)) {
+			try (final InputStream inputStream = JsonWebEnvelopedSignatureUtils.class.getResourceAsStream(contextResource)) {
 				if (inputStream == null) {
 					return;
 				}
@@ -230,22 +187,21 @@ public class JsonWebSignatureUtils {
 	 */
 	private static String getSignature(String input, JWK jwk) throws JOSEException {
 		final JWSObject jwsObject = new JWSObject(
-				new JWSHeader.Builder(JWS_ALGORITHM)
+				new JWSHeader.Builder(getJwsAlgorithm(jwk))
 						.base64URLEncodePayload(false)
 						.criticalParams(Set.of(HeaderParameterNames.BASE64_URL_ENCODE_PAYLOAD))
 						.build(),
 				new Payload(input));
 
-		final RSASSASigner signer = new RSASSASigner((RSAKey) jwk);
+		final JWSSigner signer = getJWSSigner(jwk);
 		jwsObject.sign(signer);
-
 		return jwsObject.serialize(true);
 	}
 
 	/**
 	 * Checks the signature of the jsonLd with the specified verifier. The jsonLd is normalized before checking the signature.
 	 */
-	private static boolean verifySignature(String jsonLd, String signature, RSASSAVerifier verifier)
+	private static boolean verifySignature(String jsonLd, String signature, JWSVerifier verifier)
 			throws JsonLdError, IOException, RdfWriterException, UnsupportedContentException, NoSuchAlgorithmException, ParseException,
 			JOSEException {
 		final String normalized = normalize(jsonLd);

@@ -1,6 +1,7 @@
 package com.dawex.sigourney.trustframework.vc.core.vc.v2;
 
 import com.dawex.sigourney.trustframework.vc.core.Constant;
+import com.dawex.sigourney.trustframework.vc.core.jose.crypto.JwkSetUtils;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdContexts;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdType;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.serialization.JsonLdContextsSerializer;
@@ -19,7 +20,9 @@ import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +45,8 @@ public class VerifiablePresentationSignatureHelperV2Test {
 
 	private static final String VC_ID_PREFIX = "data:%s,".formatted(MEDIA_TYPE_VC_JWT);
 
+	private static JWK jwk;
+
 	private final VerifiablePresentationSignatureHelperV2 verifiablePresentationSignatureHelper;
 
 	public VerifiablePresentationSignatureHelperV2Test() {
@@ -49,15 +54,21 @@ public class VerifiablePresentationSignatureHelperV2Test {
 		verifiablePresentationSignatureHelper = new VerifiablePresentationSignatureHelperV2(objectMapper);
 	}
 
+	@BeforeAll
+	static void init() {
+		jwk = JwkSetUtils.createKeysWithSelfSignedCertificate(JwkSetUtils.KeyAlgorithm.RSA_2048, null, "Test", 12)
+				.jwkSet().getKeys().stream().findFirst().orElseThrow();
+	}
+
 	@Nested
 	class BuildAndSignVerifiablePresentation {
 		@Test
 		void shouldBuildVerifiablePresentation() throws ParseException, JOSEException {
 			final var securedVerifiableCredentials = getVerifiableCredentials("002").stream()
-					.map(vc -> verifiablePresentationSignatureHelper.signVerifiableCredential(vc, Constant.DID_ISSUER, Constant.JWK))
+					.map(vc -> verifiablePresentationSignatureHelper.signVerifiableCredential(vc, Constant.DID_ISSUER, jwk))
 					.toList();
 			final String actual = verifiablePresentationSignatureHelper.buildAndSignVerifiablePresentation(
-					getVerifiableCredentials("001"), securedVerifiableCredentials, Constant.DID_ISSUER, Constant.JWK);
+					getVerifiableCredentials("001"), securedVerifiableCredentials, Constant.DID_ISSUER, jwk);
 
 			assertThat(actual).isNotNull();
 
@@ -112,7 +123,7 @@ public class VerifiablePresentationSignatureHelperV2Test {
 		}
 
 		private void assertThatSignatureIsValid(JWSObject jwsObject, String expectedContentType) throws JOSEException {
-			assertThat(jwsObject.verify(new RSASSAVerifier((RSAKey) Constant.JWK)))
+			assertThat(jwsObject.verify(new RSASSAVerifier((RSAKey) jwk)))
 					.as("Check JWS signature validity")
 					.isTrue();
 

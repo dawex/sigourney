@@ -1,6 +1,7 @@
 package com.dawex.sigourney.trustframework.vc.core.vc.v1;
 
 import com.dawex.sigourney.trustframework.vc.core.Constant;
+import com.dawex.sigourney.trustframework.vc.core.jose.crypto.JwkSetUtils;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdContexts;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdType;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.serialization.JsonLdContextsSerializer;
@@ -15,6 +16,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.nimbusds.jose.jwk.JWK;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +36,10 @@ import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
 
 public class VerifiablePresentationSignatureHelperV1Test {
 
+	private static JwkSetUtils.CreatedKeys keys;
+
+	private static JWK jwk;
+
 	private final VerifiablePresentationSignatureHelperV1 verifiablePresentationSignatureHelper;
 
 	public VerifiablePresentationSignatureHelperV1Test() {
@@ -40,12 +47,18 @@ public class VerifiablePresentationSignatureHelperV1Test {
 		verifiablePresentationSignatureHelper = new VerifiablePresentationSignatureHelperV1(objectMapper);
 	}
 
+	@BeforeAll
+	static void init() {
+		keys = JwkSetUtils.createKeysWithSelfSignedCertificate(JwkSetUtils.KeyAlgorithm.RSA_2048, null, "Test", 12);
+		jwk = keys.jwkSet().getKeys().stream().findFirst().orElseThrow();
+	}
+
 	@Nested
 	class BuildAndSignVerifiablePresentation {
 		@Test
 		void shouldBuildVerifiablePresentation() {
 			final String actual = verifiablePresentationSignatureHelper.buildAndSignVerifiablePresentation(
-					getVerifiableCredentials("001"), getVerifiableCredentials("002"), Constant.DID_ISSUER, Constant.JWK);
+					getVerifiableCredentials("001"), getVerifiableCredentials("002"), Constant.DID_ISSUER, jwk);
 
 			assertThat(actual).isNotNull();
 			assertThatJsonListValue("$['verifiableCredential']", actual).hasSize(2)
@@ -89,11 +102,11 @@ public class VerifiablePresentationSignatureHelperV1Test {
 						assertThat(proof).containsAllEntriesOf(Map.of(
 								"type", "JsonWebSignature2020",
 								"proofPurpose", "assertionMethod",
-								"verificationMethod", Constant.DID_ISSUER + "#" + Constant.JWK.getKeyID()
+								"verificationMethod", Constant.DID_ISSUER + "#" + jwk.getKeyID()
 						));
 						assertThat(proof).containsKey("created");
 					});
-			new ProofSignatureExpectationsHelper(Constant.CREATED_KEYS.jwkSet(), Constant.CREATED_KEYS.certificates())
+			new ProofSignatureExpectationsHelper(keys.jwkSet(), keys.certificates())
 					.assertSignatureIsValid(verifiableCredential);
 		}
 	}

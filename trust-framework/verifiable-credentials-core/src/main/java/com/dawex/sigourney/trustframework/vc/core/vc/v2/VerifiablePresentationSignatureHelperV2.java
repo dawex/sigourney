@@ -1,6 +1,6 @@
 package com.dawex.sigourney.trustframework.vc.core.vc.v2;
 
-import com.dawex.sigourney.trustframework.vc.core.jose.JsonWebSignatureUtils;
+import com.dawex.sigourney.trustframework.vc.core.jose.signature.JsonWebEnvelopedSignatureUtils;
 import com.dawex.sigourney.trustframework.vc.core.jose.exception.SignatureException;
 import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.EnvelopedVerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.VerifiableCredential;
@@ -39,12 +39,12 @@ public class VerifiablePresentationSignatureHelperV2 {
 					.map(vc -> signVerifiableCredential(vc, issuer, jwk))
 					.forEach(allCredentials::add);
 		}
-		return JsonWebSignatureUtils.signWithJWS(jsonSerialize(new VerifiablePresentation(allCredentials)),
+		return JsonWebEnvelopedSignatureUtils.signWithJWS(jsonSerialize(new VerifiablePresentation(allCredentials)),
 				CONTENT_TYPE_VP_LD_JSON, issuer, jwk);
 	}
 
 	public EnvelopedVerifiableCredential signVerifiableCredential(VerifiableCredential vc, String issuer, JWK jwk) {
-		final String securedCredential = JsonWebSignatureUtils.signWithJWS(
+		final String securedCredential = JsonWebEnvelopedSignatureUtils.signWithJWS(
 				jsonSerialize(vc), CONTENT_TYPE_VC_LD_JSON, issuer, jwk);
 		return EnvelopedVerifiableCredential.builder()
 				.mediaType(MEDIA_TYPE_VC_JWT)
