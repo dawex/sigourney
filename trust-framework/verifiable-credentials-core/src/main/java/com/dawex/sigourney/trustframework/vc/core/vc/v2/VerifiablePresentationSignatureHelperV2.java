@@ -12,7 +12,7 @@ import com.nimbusds.jose.jwk.JWK;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class VerifiablePresentationSignatureHelper {
+public class VerifiablePresentationSignatureHelperV2 {
 
 	public static final String CONTENT_TYPE_VP_LD_JSON = "vp+ld+json";
 
@@ -22,7 +22,7 @@ public class VerifiablePresentationSignatureHelper {
 
 	private final ObjectMapper objectMapper;
 
-	public VerifiablePresentationSignatureHelper(ObjectMapper objectMapper) {
+	public VerifiablePresentationSignatureHelperV2(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
 	}
 

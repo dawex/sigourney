@@ -33,7 +33,7 @@ class NotaryServiceV2Test {
 	}
 
 	@Test
-	void shouldGetRegistrationNumberVCWithEORI() throws ApiException {
+	void shouldGetRegistrationNumberVCWithEORI() throws ApiException, NotaryServiceException {
 		final var vcId = "did:web:dawex.com:registrationNumber";
 
 		when(registrationNumberApi.eoriControllerCheckEori(vcId, vcId, REGISTRATION_NUMBER)).thenReturn("vcRegistrationNumber");
@@ -48,7 +48,7 @@ class NotaryServiceV2Test {
 	}
 
 	@Test
-	void shouldGetRegistrationNumberVCWithLeiCode() throws ApiException {
+	void shouldGetRegistrationNumberVCWithLeiCode() throws ApiException, NotaryServiceException {
 		final var vcId = "did:web:dawex.com:registrationNumber";
 
 		when(registrationNumberApi.leiCodeControllerCheckLeiCode(vcId, vcId, REGISTRATION_NUMBER)).thenReturn("vcRegistrationNumber");
@@ -63,7 +63,7 @@ class NotaryServiceV2Test {
 	}
 
 	@Test
-	void shouldGetRegistrationNumberVCWithTaxId() throws ApiException {
+	void shouldGetRegistrationNumberVCWithTaxId() throws ApiException, NotaryServiceException {
 		final var vcId = "did:web:dawex.com:registrationNumber";
 
 		when(registrationNumberApi.openCorporatesTaxIdControllerCheckTaxId(vcId, vcId, REGISTRATION_NUMBER)).thenReturn(
@@ -79,7 +79,7 @@ class NotaryServiceV2Test {
 	}
 
 	@Test
-	void shouldGetRegistrationNumberVCWithVAT() throws ApiException {
+	void shouldGetRegistrationNumberVCWithVAT() throws ApiException, NotaryServiceException {
 		final var vcId = "did:web:dawex.com:registrationNumber";
 
 		when(registrationNumberApi.vatIdControllerCheckVatId(vcId, vcId, REGISTRATION_NUMBER)).thenReturn("vcRegistrationNumber");

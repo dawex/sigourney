@@ -42,7 +42,7 @@ class NotaryServiceV1Test {
 	}
 
 	@Test
-	void shouldGetRegistrationNumberVCWithEORI() throws ApiException {
+	void shouldGetRegistrationNumberVCWithEORI() throws ApiException, NotaryServiceException {
 		final CheckRegistrationNumberVCRequest actualRequest = shouldGetRegistrationNumberVC(RegistrationNumberType.EORI);
 
 		assertThat(actualRequest.getGxEORI()).isEqualTo(REGISTRATION_NUMBER);
@@ -51,7 +51,7 @@ class NotaryServiceV1Test {
 	}
 
 	@Test
-	void shouldGetRegistrationNumberVCWithLeiCode() throws ApiException {
+	void shouldGetRegistrationNumberVCWithLeiCode() throws ApiException, NotaryServiceException {
 		final CheckRegistrationNumberVCRequest actualRequest = shouldGetRegistrationNumberVC(RegistrationNumberType.LEI_CODE);
 
 		assertThat(actualRequest.getGxEORI()).isNull();
@@ -60,7 +60,7 @@ class NotaryServiceV1Test {
 	}
 
 	@Test
-	void shouldGetRegistrationNumberVCWithVAT() throws ApiException {
+	void shouldGetRegistrationNumberVCWithVAT() throws ApiException, NotaryServiceException {
 		final CheckRegistrationNumberVCRequest actualRequest = shouldGetRegistrationNumberVC(RegistrationNumberType.VAT_ID);
 
 		assertThat(actualRequest.getGxEORI()).isNull();
@@ -101,7 +101,7 @@ class NotaryServiceV1Test {
 	}
 
 	private CheckRegistrationNumberVCRequest shouldGetRegistrationNumberVC(RegistrationNumberType registrationNumberType)
-			throws ApiException {
+			throws ApiException, NotaryServiceException {
 		final var vcId = "did:web:dawex.com:registrationNumber";
 
 		when(registrationNumberVcApi.checkRegistrationNumberVC(any(), eq(vcId))).thenReturn(Map.of("id", vcId));

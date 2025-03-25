@@ -31,13 +31,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
 import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
 
-public class VerifiablePresentationSignatureHelperTest {
+public class VerifiablePresentationSignatureHelperV1Test {
 
-	private final VerifiablePresentationSignatureHelper verifiablePresentationSignatureHelper;
+	private final VerifiablePresentationSignatureHelperV1 verifiablePresentationSignatureHelper;
 
-	public VerifiablePresentationSignatureHelperTest() {
+	public VerifiablePresentationSignatureHelperV1Test() {
 		final ObjectMapper objectMapper = getObjectMapper();
-		verifiablePresentationSignatureHelper = new VerifiablePresentationSignatureHelper(objectMapper);
+		verifiablePresentationSignatureHelper = new VerifiablePresentationSignatureHelperV1(objectMapper);
 	}
 
 	@Nested
