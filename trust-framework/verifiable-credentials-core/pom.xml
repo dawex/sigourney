@@ -19,15 +19,15 @@
 
 	<properties>
 		<bouncycastle.version>1.80</bouncycastle.version>
-		<jackson.version>2.18.2</jackson.version>
-		<jackson-datatype-jsr310.version>2.18.2</jackson-datatype-jsr310.version>
+		<jackson.version>2.18.3</jackson.version>
+		<jackson-datatype-jsr310.version>2.18.3</jackson-datatype-jsr310.version>
 		<jakarta-annotation.version>3.0.0</jakarta-annotation.version>
 		<jakarta-json.version>2.0.1</jakarta-json.version>
-		<nimbus-jose-jwt.version>10.0.1</nimbus-jose-jwt.version>
+		<nimbus-jose-jwt.version>10.1</nimbus-jose-jwt.version>
 		<openapi-generator.version>7.11.0</openapi-generator.version>
 		<rdf-urdna.version>1.4</rdf-urdna.version>
-		<swagger.version>2.2.28</swagger.version>
-		<titanium-json-ld.version>1.5.0</titanium-json-ld.version>
+		<swagger.version>2.2.29</swagger.version>
+		<titanium-json-ld.version>1.6.0</titanium-json-ld.version>
 	</properties>
 
 	<dependencies>

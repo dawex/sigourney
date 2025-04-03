@@ -20,16 +20,16 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<jreleaser-maven-plugin.version>1.11.0</jreleaser-maven-plugin.version>
-		<maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
-		<maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
-		<maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+		<jreleaser-maven-plugin.version>1.17.0</jreleaser-maven-plugin.version>
+		<maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
+		<maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+		<maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
 
 		<assert4j.version>3.27.3</assert4j.version>
 		<json-path.version>2.9.0</json-path.version>
-		<junit.version>5.11.4</junit.version>
-		<mockito.version>5.15.2</mockito.version>
+		<junit.version>5.12.1</junit.version>
+		<mockito.version>5.16.1</mockito.version>
 	</properties>
 
 	<modules>
@@ -169,6 +169,7 @@
 											<maven-central>
 												<active>ALWAYS</active>
 												<url>https://s01.oss.sonatype.org/service/local</url>
+												<snapshotUrl>https://s01.oss.sonatype.org/content/repositories/snapshots/</snapshotUrl>
 												<applyMavenCentralRules>true</applyMavenCentralRules>
 												<closeRepository>false</closeRepository>
 												<releaseRepository>false</releaseRepository>
