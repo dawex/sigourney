@@ -124,7 +124,7 @@ class DataProductVerifiableCredentialTest {
 						"type", "gx:DataAccountExport",
 						"gx:requestType", "API",
 						"gx:accessType", "digital",
-						"gx:formatType", "DataAccountExport.formatType"));
+						"gx:formatType", "application/json"));
 
 		assertThatJsonListValue("$['credentialSubject']['gx:aggregationOfResources']", serializedVc).hasSize(1)
 				.first().asInstanceOf(MAP)
@@ -222,7 +222,7 @@ class DataProductVerifiableCredentialTest {
 						.dataAccountExport(List.of(DataAccountExport.builder()
 								.requestType(RequestType.API)
 								.accessType(AccessType.DIGITAL)
-								.formatType("DataAccountExport.formatType")
+								.formatType(MimeType.APPLICATION_JSON)
 								.build()))
 						.aggregationOfResources(List.of(new AggregationOfResource("62bac14584fd784b1541e9cb")))
 						.legalDocuments(List.of(

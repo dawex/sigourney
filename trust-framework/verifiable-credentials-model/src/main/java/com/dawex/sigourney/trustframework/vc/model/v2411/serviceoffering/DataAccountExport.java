@@ -16,9 +16,9 @@ public class DataAccountExport {
 	private final AccessType accessType;
 
 	@JsonLdProperty(value = "formatType", namespace = GAIAX_NS, mandatory = true)
-	private final String formatType;
+	private final MimeType formatType;
 
-	public DataAccountExport(RequestType requestType, AccessType accessType, String formatType) {
+	public DataAccountExport(RequestType requestType, AccessType accessType, MimeType formatType) {
 		this.requestType = requestType;
 		this.accessType = accessType;
 		this.formatType = formatType;
@@ -36,7 +36,7 @@ public class DataAccountExport {
 		return accessType;
 	}
 
-	public String getFormatType() {
+	public MimeType getFormatType() {
 		return formatType;
 	}
 
@@ -72,7 +72,7 @@ public class DataAccountExport {
 
 		private AccessType accessType;
 
-		private String formatType;
+		private MimeType formatType;
 
 		DataAccountExportBuilder() {
 		}
@@ -87,7 +87,7 @@ public class DataAccountExport {
 			return this;
 		}
 
-		public DataAccountExportBuilder formatType(String formatType) {
+		public DataAccountExportBuilder formatType(MimeType formatType) {
 			this.formatType = formatType;
 			return this;
 		}
