@@ -1,6 +1,6 @@
 package com.dawex.sigourney.trustframework.vc.core.utils;
 
-import com.dawex.sigourney.trustframework.vc.core.jose.JsonWebSignatureUtils;
+import com.dawex.sigourney.trustframework.vc.core.jose.signature.JsonWebEmbeddedSignatureUtils;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -31,13 +31,13 @@ public class ProofSignatureExpectationsHelper {
 
 		assertThat(jwkSet.getKeys())
 				.isNotEmpty().first()
-				.matches(jwk -> JsonWebSignatureUtils.isSignatureValid(jws, jsonLd, jwk),
+				.matches(jwk -> JsonWebEmbeddedSignatureUtils.isSignatureValid(jws, jsonLd, jwk),
 						"proof signature is valid (JWK)");
 
 		assertThat(certificates)
 				.isNotEmpty().first()
 				.extracting(X509CertUtils::parse)
-				.matches(certificate -> JsonWebSignatureUtils.isSignatureValid(jws, jsonLd, certificate),
+				.matches(certificate -> JsonWebEmbeddedSignatureUtils.isSignatureValid(jws, jsonLd, certificate),
 						"proof signature is valid (X.509 certificate");
 	}
 }

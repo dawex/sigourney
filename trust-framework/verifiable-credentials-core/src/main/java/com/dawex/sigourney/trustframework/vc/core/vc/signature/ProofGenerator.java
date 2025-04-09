@@ -1,6 +1,6 @@
 package com.dawex.sigourney.trustframework.vc.core.vc.signature;
 
-import com.dawex.sigourney.trustframework.vc.core.jose.JsonWebSignatureUtils;
+import com.dawex.sigourney.trustframework.vc.core.jose.signature.JsonWebEmbeddedSignatureUtils;
 import com.dawex.sigourney.trustframework.vc.core.vc.signature.model.Proof;
 import com.nimbusds.jose.jwk.JWK;
 
@@ -13,7 +13,7 @@ public class ProofGenerator {
 	 * Generate the proof of the serialized JSON-LD document, using the provided JSON Web Key
 	 */
 	public static Proof generateProof(String jsonLd, String verificationMethod, JWK jwk) {
-		final String signature = JsonWebSignatureUtils.generateSignature(jsonLd, jwk);
+		final String signature = JsonWebEmbeddedSignatureUtils.generateSignature(jsonLd, jwk);
 		return toProof(signature, verificationMethod);
 	}
 

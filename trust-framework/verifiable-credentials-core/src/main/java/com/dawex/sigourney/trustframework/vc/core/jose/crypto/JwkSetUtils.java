@@ -1,11 +1,13 @@
-package com.dawex.sigourney.trustframework.vc.core.jose;
+package com.dawex.sigourney.trustframework.vc.core.jose.crypto;
 
 import com.dawex.sigourney.trustframework.vc.core.jose.exception.KeyCreationException;
 import com.dawex.sigourney.trustframework.vc.core.jose.exception.KeyParsingException;
 import com.dawex.sigourney.trustframework.vc.core.jose.exception.MissingCertificateException;
+import com.dawex.sigourney.trustframework.vc.core.jose.exception.UnsupportedAlgorithmException;
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.Curve;
+import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.IOUtils;
 import com.nimbusds.jose.util.X509CertChainUtils;
 import com.nimbusds.jose.util.X509CertUtils;
@@ -20,28 +22,23 @@ import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.math.BigInteger;
-import java.net.URI;
 import java.security.GeneralSecurityException;
-import java.security.InvalidParameterException;
-import java.security.KeyFactory;
 import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPrivateCrtKey;
+import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.RSAPublicKeySpec;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -49,22 +46,11 @@ import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Utility class for handling JwkSets
  */
 public class JwkSetUtils {
-
-	/**
-	 * JWT are signed with RS256 algorithm, that is an RSA signature with SHA-256.
-	 * It's a popular algorithm, and the default one in NimbusReactiveJwtDecoder (used by the resources servers).
-	 * The minimum recommended size for RSA key is 2048 bits.
-	 */
-	private static final int RSA_KEY_SIZE = 2048;
-
-	private static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
 
 	private JwkSetUtils() {
 		// no instance allowed
@@ -86,22 +72,38 @@ public class JwkSetUtils {
 	/**
 	 * Creates a new Jwk Set, and generate a self-signed X.509 certificate.
 	 *
+	 * @param keyAlgorithm         algorithm used to generate the public and private keys
 	 * @param certBaseUrl          X509 certificate URL, formatted with the keyId (%s will be replaced by the keyId if present); can be null
 	 * @param certIssuerCommonName Common name that appears in the X509 certificate
 	 * @param certValidityInMonths validity of the generated X509 certificate, in months
 	 * @throws KeyCreationException If the keys cannot be created
 	 */
-	public static CreatedKeys createKeysWithSelfSignedCertificate(String certBaseUrl, String certIssuerCommonName,
-			int certValidityInMonths) {
+	public static CreatedKeys createKeysWithSelfSignedCertificate(KeyAlgorithm keyAlgorithm, String certBaseUrl,
+			String certIssuerCommonName, int certValidityInMonths) {
 		try {
-			final KeyPair keyPair = generateRsaKey();
+			final KeyPair keyPair = switch (keyAlgorithm) {
+				case P_256 -> EcUtils.generateKeyPair(Curve.P_256);
+				case P_384 -> EcUtils.generateKeyPair(Curve.P_384);
+				case P_521 -> EcUtils.generateKeyPair(Curve.P_521);
+				case RSA_2048 -> RsaUtils.generateKeyPair(2048);
+				case RSA_3072 -> RsaUtils.generateKeyPair(3072);
+				case RSA_4096 -> RsaUtils.generateKeyPair(4096);
+			};
 			final X509Certificate cert = getSelfSignedX509Certificate(keyPair, certIssuerCommonName, certValidityInMonths);
-			final RSAKey rsaKey = buildRsaKey(certBaseUrl, cert, (RSAPrivateKey) keyPair.getPrivate());
-			return new CreatedKeys(new JWKSet(rsaKey), List.of(X509CertUtils.toPEMString(cert)));
+			final JWK jwk = toJWK(certBaseUrl, cert, keyPair.getPrivate());
+			return new CreatedKeys(new JWKSet(jwk), List.of(X509CertUtils.toPEMString(cert)));
 
 		} catch (OperatorCreationException | CertificateException | JOSEException e) {
 			throw new KeyCreationException("The key pair and/or the X.509 certificate cannot be created", e);
 		}
+	}
+
+	/**
+	 * Creates a new Jwk Set, and generate a self-signed X.509 certificate using RSA with a 2048 key size.
+	 */
+	public static CreatedKeys createKeysWithSelfSignedCertificate(String certBaseUrl, String certIssuerCommonName,
+			int certValidityInMonths) {
+		return createKeysWithSelfSignedCertificate(KeyAlgorithm.RSA_2048, certBaseUrl, certIssuerCommonName, certValidityInMonths);
 	}
 
 	/**
@@ -112,12 +114,14 @@ public class JwkSetUtils {
 	public static CreatedKeys importKeysWithSelfSignedCertificate(InputStream privateKeyInputStream, String certBaseUrl,
 			String certIssuerCommonName, int certValidityInMonths) {
 		try (InputStreamReader pemReader = new InputStreamReader(privateKeyInputStream)) {
-			final KeyPair keyPair = parseRsaPrivateKey(pemReader);
-			final X509Certificate cert = getSelfSignedX509Certificate(keyPair, certIssuerCommonName, certValidityInMonths);
-			final RSAKey rsaKey = buildRsaKey(certBaseUrl, cert, (RSAPrivateKey) keyPair.getPrivate());
-			return new CreatedKeys(new JWKSet(rsaKey), List.of(X509CertUtils.toPEMString(cert)));
+			final PrivateKey privateKey = parsePrivateKey(pemReader);
+			final PublicKey publicKey = generatePublicKey(privateKey);
+			final X509Certificate cert = getSelfSignedX509Certificate(new KeyPair(publicKey, privateKey),
+					certIssuerCommonName, certValidityInMonths);
+			final JWK jwk = toJWK(certBaseUrl, cert, privateKey);
+			return new CreatedKeys(new JWKSet(jwk), List.of(X509CertUtils.toPEMString(cert)));
 
-		} catch (JOSEException | IOException | OperatorCreationException | GeneralSecurityException e) {
+		} catch (IOException | OperatorCreationException | GeneralSecurityException | JOSEException e) {
 			throw new KeyCreationException("The key pair cannot be imported and/or the X.509 certificate cannot be created", e);
 		}
 	}
@@ -132,10 +136,10 @@ public class JwkSetUtils {
 	public static CreatedKeys importKeysAndCertificate(InputStream privateKeyInputStream, InputStream certificateInputStream,
 			String certBaseUrl) {
 		try (InputStreamReader pemReader = new InputStreamReader(privateKeyInputStream)) {
-			final KeyPair keyPair = parseRsaPrivateKey(pemReader);
+			final PrivateKey privateKey = parsePrivateKey(pemReader);
 			final List<X509Certificate> certificates = getX509Certificates(certificateInputStream);
-			final RSAKey rsaKey = buildRsaKey(certBaseUrl, certificates.get(0), (RSAPrivateKey) keyPair.getPrivate());
-			return new CreatedKeys(new JWKSet(rsaKey), certificates.stream().map(X509CertUtils::toPEMString).toList());
+			final JWK jwk = toJWK(certBaseUrl, certificates.get(0), privateKey);
+			return new CreatedKeys(new JWKSet(jwk), certificates.stream().map(X509CertUtils::toPEMString).toList());
 
 		} catch (GeneralSecurityException | JOSEException | IOException | MissingCertificateException e) {
 			throw new KeyCreationException("The key pair and/or the X.509 certificate cannot be imported", e);
@@ -158,10 +162,25 @@ public class JwkSetUtils {
 
 		final X509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(
 				name, serial, notBefore, notAfter, name, keyPair.getPublic());
-		final ContentSigner contentSigner = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM).build(keyPair.getPrivate());
+		final ContentSigner contentSigner = getContentSigner(keyPair.getPrivate());
 		final JcaX509CertificateConverter converter = new JcaX509CertificateConverter().setProvider(new BouncyCastleProvider());
 
 		return converter.getCertificate(certBuilder.build(contentSigner));
+	}
+
+	private static PrivateKey parsePrivateKey(Reader pemReader) throws IOException {
+		final Object readObject;
+		try (final PEMParser pemParser = new PEMParser(pemReader)) {
+			readObject = pemParser.readObject();
+		}
+		// get private key
+		final PrivateKeyInfo privateKeyInfo;
+		if (readObject instanceof PEMKeyPair pemKeyPair) {
+			privateKeyInfo = pemKeyPair.getPrivateKeyInfo();
+		} else {
+			privateKeyInfo = PrivateKeyInfo.getInstance(readObject);
+		}
+		return new JcaPEMKeyConverter().getPrivateKey(privateKeyInfo);
 	}
 
 	/**
@@ -180,52 +199,39 @@ public class JwkSetUtils {
 		return certificates;
 	}
 
-	private static KeyPair generateRsaKey() {
-		final KeyPair keyPair;
-		try {
-			final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-			keyPairGenerator.initialize(RSA_KEY_SIZE);
-			keyPair = keyPairGenerator.generateKeyPair();
-		} catch (InvalidParameterException | NoSuchAlgorithmException e) {
-			throw new KeyCreationException("The RSA key pair cannot be generated", e);
-		}
-		return keyPair;
+	private static PublicKey generatePublicKey(PrivateKey privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		return switch (privateKey.getAlgorithm()) {
+			case EcUtils.KEY_ALGORITHM_EC, EcUtils.KEY_ALGORITHM_ECDSA -> EcUtils.generatePublicKey(privateKey);
+			case RsaUtils.KEY_ALGORITHM_RSA -> RsaUtils.generatePublicKey(privateKey);
+			default -> throw new UnsupportedAlgorithmException(privateKey.getAlgorithm());
+		};
 	}
 
-	private static KeyPair parseRsaPrivateKey(Reader pemReader) throws InvalidKeySpecException, IOException, NoSuchAlgorithmException {
-		final Object readObject;
-		try (final PEMParser pemParser = new PEMParser(pemReader)) {
-			readObject = pemParser.readObject();
-		}
-
-		// get private key
-		final PrivateKeyInfo privateKeyInfo;
-		if (readObject instanceof PEMKeyPair pemKeyPair) {
-			privateKeyInfo = pemKeyPair.getPrivateKeyInfo();
-		} else {
-			privateKeyInfo = PrivateKeyInfo.getInstance(readObject);
-		}
-		final RSAPrivateCrtKey privateKey = (RSAPrivateCrtKey) new JcaPEMKeyConverter().getPrivateKey(privateKeyInfo);
-
-		// generate public key from private key
-		final RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(privateKey.getModulus(), privateKey.getPublicExponent());
-		final KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-		final PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
-
-		return new KeyPair(publicKey, privateKey);
+	private static JWK toJWK(String certBaseUrl, X509Certificate cert, PrivateKey privateKey) throws JOSEException {
+		return switch (privateKey.getAlgorithm()) {
+			case EcUtils.KEY_ALGORITHM_EC, EcUtils.KEY_ALGORITHM_ECDSA -> EcUtils.toJWK(certBaseUrl, cert, privateKey);
+			case RsaUtils.KEY_ALGORITHM_RSA -> RsaUtils.toJWK(certBaseUrl, cert, privateKey);
+			default -> throw new UnsupportedAlgorithmException(privateKey.getAlgorithm());
+		};
 	}
 
-	private static RSAKey buildRsaKey(String certBaseUrl, X509Certificate cert, RSAPrivateKey privateKey) throws JOSEException {
-		final String kid = UUID.randomUUID().toString();
-		return new RSAKey.Builder(RSAKey.parse(cert))
-				.keyID(kid)
-				.privateKey(privateKey)
-				// The "alg" (algorithm) parameter identifies the algorithm intended for use with the key.
-				.algorithm(JsonWebSignatureUtils.JWS_ALGORITHM)
-				.x509CertURL(Optional.ofNullable(certBaseUrl).map(u -> URI.create(u.formatted(kid))).orElse(null))
-				.build();
+	private static ContentSigner getContentSigner(PrivateKey privateKey) throws OperatorCreationException {
+		return switch (privateKey.getAlgorithm()) {
+			case EcUtils.KEY_ALGORITHM_EC, EcUtils.KEY_ALGORITHM_ECDSA -> EcUtils.getContentSigner((ECPrivateKey) privateKey);
+			case RsaUtils.KEY_ALGORITHM_RSA -> RsaUtils.getContentSigner((RSAPrivateKey) privateKey);
+			default -> throw new UnsupportedAlgorithmException(privateKey.getAlgorithm());
+		};
 	}
 
 	public record CreatedKeys(JWKSet jwkSet, List<String> certificates) {
+	}
+
+	public enum KeyAlgorithm {
+		P_256, // secp256r1
+		P_384, // secp384r1
+		P_521, // secp521r1
+		RSA_2048, // RSA 2048 bits
+		RSA_3072, // RSA 3072 bits
+		RSA_4096 // RSA 4096 bits
 	}
 }

@@ -21,8 +21,8 @@ The format is following the W3C Verifiable Credentials Data Model.
 The core library handles base operations for generating and signing verifiable credentials: 
 - JSON-LD serialization made easier by providing annotations and Jackson serializers
 - Generating / validating a JWS
-- Creation of RSA key pairs and X.509 self-signed certificates
-- Adding a proof to an existing VC
+- Creation of RSA or Elliptic Curve key pairs and X.509 self-signed certificates
+- Adding a proof to an existing Verifiable Credential
 
 ### Verifiable credential model
 
@@ -45,7 +45,7 @@ Dependency:
 <dependency>
     <groupId>com.dawex.sigourney</groupId>
     <artifactId>sigourney-verifiable-credentials-model</artifactId>
-    <version>2.0.5</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
@@ -105,7 +105,7 @@ objectMapper.registerModule(JacksonModuleFactory.dataProductSerializationModule(
 #### Configure the JSON Web Key (JWK) 
 
 If necessary, the library also provide a way to generate : 
-- a JWK containing a key pair (private and public RSA keys)
+- a JWK containing a key pair (private and public keys, using RSA or Elliptic curve algorithms)
 - a self-signed X.509 certificate
 
 ```java
