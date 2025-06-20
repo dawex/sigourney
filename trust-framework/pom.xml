@@ -170,7 +170,6 @@
 												<active>ALWAYS</active>
 												<url>https://central.sonatype.com/api/v1/publisher</url>
 												<snapshotSupported>false</snapshotSupported>
-												<authorization>BEARER</authorization>
 												<applyMavenCentralRules>true</applyMavenCentralRules>
 												<stagingRepositories>
 													<stagingRepository>target/staging-deploy</stagingRepository>
