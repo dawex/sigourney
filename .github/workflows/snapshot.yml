@@ -42,6 +42,6 @@ jobs:
           restore-keys: ${{ runner.os }}-maven-
 
       - name: Publish package
-        run: mvn -B deploy --file trust-framework/pom.xml
+        run: mvn -B deploy --file trust-framework/pom.xml -pl verifiable-credentials-core,verifiable-credentials-model
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
