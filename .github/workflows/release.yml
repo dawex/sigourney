@@ -41,9 +41,10 @@ jobs:
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
           JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.JRELEASER_GPG_PUBLIC_KEY }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_DRY_RUN: false
         run: |
-          mvn -B deploy jreleaser:deploy --file trust-framework/pom.xml -pl :sigourney-trustframework -P release -DaltDeploymentRepository=local::default::file:./trust-framework/target/staging-deploy
-          mvn -B deploy jreleaser:deploy --file trust-framework/pom.xml -pl verifiable-credentials-core,verifiable-credentials-model -P release -DaltDeploymentRepository=local::default::file:./trust-framework/target/staging-deploy
+          mvn -B deploy --file trust-framework/pom.xml -P release -DaltDeploymentRepository=local::file:./trust-framework/target/staging-deploy
+          mvn -B jreleaser:deploy --file trust-framework/pom.xml -P release -DaltDeploymentRepository=local::file:./trust-framework/target/staging-deploy
 
       - name: JReleaser output
         if: always()
