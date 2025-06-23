@@ -41,31 +41,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
 
-#      - name: Publish package
-#        run: mvn -B deploy --file trust-framework/pom.xml -pl verifiable-credentials-core,verifiable-credentials-model
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Publish package
+        run: mvn -B deploy --file trust-framework/pom.xml
         env:
-          JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.JRELEASER_NEXUS2_USERNAME }}
-          JRELEASER_MAVENCENTRAL_PASSWORD: ${{ secrets.JRELEASER_NEXUS2_PASSWORD }}
-          JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
-          JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
-          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.JRELEASER_GPG_PUBLIC_KEY }}
-          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JRELEASER_DRY_RUN: true
-        run: |
-          mvn -B deploy jreleaser:deploy --file trust-framework/pom.xml -pl :sigourney-trustframework -P release -DaltDeploymentRepository=local::default::file:./trust-framework/target/staging-deploy
-          mvn -B deploy jreleaser:deploy --file trust-framework/pom.xml -pl verifiable-credentials-core,verifiable-credentials-model -P release -DaltDeploymentRepository=local::default::file:./trust-framework/target/staging-deploy
-
-      - name: JReleaser output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: jreleaser-output
-          path: |
-            trust-framework/target/jreleaser/trace.log
-            trust-framework/target/jreleaser/output.properties
-            trust-framework/*/target/jreleaser/trace.log
-            trust-framework/*/target/jreleaser/output.properties
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
