@@ -6,7 +6,7 @@
 
 	<groupId>com.dawex.sigourney</groupId>
 	<artifactId>sigourney-trustframework</artifactId>
-	<version>2.1.9</version>
+	<version>2.2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>sigourney-trustframework</name>
@@ -14,22 +14,31 @@
 	<url>https://github.com/dawex/sigourney</url>
 
 	<properties>
-		<java.version>17</java.version>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
+		<java.version>21</java.version>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<jreleaser-maven-plugin.version>1.18.0</jreleaser-maven-plugin.version>
+		<jreleaser-maven-plugin.version>1.19.0</jreleaser-maven-plugin.version>
 		<maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
 		<maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
 		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
 		<maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
 
 		<assert4j.version>3.27.3</assert4j.version>
+		<bouncycastle.version>1.80</bouncycastle.version>
+		<jackson.version>2.19.1</jackson.version>
+		<jakarta-annotation.version>3.0.0</jakarta-annotation.version>
+		<jakarta-json.version>2.0.1</jakarta-json.version>
 		<json-path.version>2.9.0</json-path.version>
-		<junit.version>5.12.1</junit.version>
-		<mockito.version>5.16.1</mockito.version>
+		<junit.version>5.13.3</junit.version>
+		<mockito.version>5.18.0</mockito.version>
+		<nimbus-jose-jwt.version>10.3.1</nimbus-jose-jwt.version>
+		<openapi-generator.version>7.14.0</openapi-generator.version>
+		<rdf-urdna.version>1.4</rdf-urdna.version>
+		<swagger.version>2.2.34</swagger.version>
+		<titanium-json-ld.version>1.6.0</titanium-json-ld.version>
 	</properties>
 
 	<modules>
@@ -87,6 +96,106 @@
 			<url>https://maven.pkg.github.com/dawex/sigourney</url>
 		</repository>
 	</distributionManagement>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- Internal dependencies -->
+			<dependency>
+				<groupId>com.dawex.sigourney</groupId>
+				<artifactId>sigourney-verifiable-credentials-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- External dependencies -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-jsr310</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+
+			<!-- JSON-LD / RDF -->
+			<dependency>
+				<groupId>com.apicatalog</groupId>
+				<artifactId>titanium-json-ld</artifactId>
+				<version>${titanium-json-ld.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.setl</groupId>
+				<artifactId>rdf-urdna</artifactId>
+				<version>${rdf-urdna.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish</groupId>
+				<artifactId>jakarta.json</artifactId>
+				<version>${jakarta-json.version}</version>
+			</dependency>
+
+			<!-- Jose -->
+			<dependency>
+				<groupId>com.nimbusds</groupId>
+				<artifactId>nimbus-jose-jwt</artifactId>
+				<version>${nimbus-jose-jwt.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk18on</artifactId>
+				<version>${bouncycastle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpkix-jdk18on</artifactId>
+				<version>${bouncycastle.version}</version>
+			</dependency>
+
+			<!-- Open API -->
+			<dependency>
+				<groupId>io.swagger.core.v3</groupId>
+				<artifactId>swagger-annotations</artifactId>
+				<version>${swagger.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.annotation</groupId>
+				<artifactId>jakarta.annotation-api</artifactId>
+				<version>${jakarta-annotation.version}</version>
+			</dependency>
+
+			<!-- Tests -->
+			<dependency>
+				<groupId>org.assertj</groupId>
+				<artifactId>assertj-core</artifactId>
+				<version>${assert4j.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${mockito.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.jayway.jsonpath</groupId>
+				<artifactId>json-path</artifactId>
+				<version>${json-path.version}</version>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<profiles>
 		<profile>
