@@ -33,7 +33,7 @@ It is based on the core library, and is the main entry point supposing there is 
 
 ### Maven
 
-The library is built using Java 17, which is a Java LTS version that is still supported.
+The library is built using Java 21, which is a Java LTS version that is still supported.
 
 Build:
 ```shell
@@ -45,7 +45,7 @@ Dependency:
 <dependency>
     <groupId>com.dawex.sigourney</groupId>
     <artifactId>sigourney-verifiable-credentials-model</artifactId>
-    <version>2.1.9</version>
+    <version>2.2.0</version>
 </dependency>
 ```
 
@@ -54,7 +54,7 @@ Dependency:
 #### Configure the `FormatProvider` for serializing identifiers
 
 The format of identifiers is configurable through a format provider, that maps a format name to a format String following
-the [Formatter syntax](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html#syntax).
+the [Formatter syntax](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Formatter.html#syntax).
 The arguments given to the Formatter is the field value. If no format is defined for a particular format name, then the raw value is
 returned.
 

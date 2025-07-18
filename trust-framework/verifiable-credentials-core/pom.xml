@@ -7,126 +7,89 @@
 	<parent>
 		<groupId>com.dawex.sigourney</groupId>
 		<artifactId>sigourney-trustframework</artifactId>
-		<version>2.1.9</version>
+		<version>2.2.0</version>
 	</parent>
 
 	<artifactId>sigourney-verifiable-credentials-core</artifactId>
-	<version>2.1.9</version>
+	<version>2.2.0</version>
 
 	<name>sigourney-verifiable-credentials-core</name>
 	<description>Sigourney Verifiable Credential core</description>
 	<url>https://github.com/dawex/sigourney</url>
 
-	<properties>
-		<bouncycastle.version>1.80</bouncycastle.version>
-		<jackson.version>2.18.3</jackson.version>
-		<jackson-datatype-jsr310.version>2.18.3</jackson-datatype-jsr310.version>
-		<jakarta-annotation.version>3.0.0</jakarta-annotation.version>
-		<jakarta-json.version>2.0.1</jakarta-json.version>
-		<nimbus-jose-jwt.version>10.1</nimbus-jose-jwt.version>
-		<openapi-generator.version>7.11.0</openapi-generator.version>
-		<rdf-urdna.version>1.4</rdf-urdna.version>
-		<swagger.version>2.2.29</swagger.version>
-		<titanium-json-ld.version>1.6.0</titanium-json-ld.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
 
 		<!-- JSON-LD / RDF -->
 		<dependency>
 			<groupId>com.apicatalog</groupId>
 			<artifactId>titanium-json-ld</artifactId>
-			<version>${titanium-json-ld.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.setl</groupId>
 			<artifactId>rdf-urdna</artifactId>
-			<version>${rdf-urdna.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>jakarta.json</artifactId>
-			<version>${jakarta-json.version}</version>
 		</dependency>
 
 		<!-- Jose -->
 		<dependency>
 			<groupId>com.nimbusds</groupId>
 			<artifactId>nimbus-jose-jwt</artifactId>
-			<version>${nimbus-jose-jwt.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk18on</artifactId>
-			<version>${bouncycastle.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcpkix-jdk18on</artifactId>
-			<version>${bouncycastle.version}</version>
 		</dependency>
 
 		<!-- Open API -->
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-annotations</artifactId>
-			<version>${swagger.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.annotation</groupId>
 			<artifactId>jakarta.annotation-api</artifactId>
-			<version>${jakarta-annotation.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>${jackson-datatype-jsr310.version}</version>
 		</dependency>
 
 		<!-- Tests -->
 		<dependency>
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
-			<version>${assert4j.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
-			<version>${json-path.version}</version>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- Open API -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13.2</version>
-			<scope>test</scope>
-		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -147,14 +110,12 @@
 					<configOptions>
 						<sourceFolder>.</sourceFolder>
 						<serializationLibrary>jackson</serializationLibrary>
-						<java8>true</java8>
 						<library>native</library>
-						<dateLibrary>java8</dateLibrary>
 						<disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
 						<hideGenerationTimestamp>true</hideGenerationTimestamp>
 						<openApiNullable>false</openApiNullable>
 						<testOutput>${project.build.directory}/generated-test-sources/openapi</testOutput>
-						<useJakartaEe>true</useJakartaEe> <!-- this option comes with 6.3.0 -->
+						<useJakartaEe>true</useJakartaEe>
 					</configOptions>
 				</configuration>
 				<executions>
