@@ -5,11 +5,9 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.cache.LruCache;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.io.error.RdfWriterException;
-import com.apicatalog.rdf.io.error.UnsupportedContentException;
-import com.apicatalog.rdf.spi.RdfProvider;
+import com.apicatalog.rdf.api.RdfConsumerException;
+import com.apicatalog.rdf.canon.RdfCanon;
+import com.apicatalog.rdf.nquads.NQuadsWriter;
 import com.dawex.sigourney.trustframework.vc.core.jose.exception.SignatureException;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.ExternalContext;
 import com.nimbusds.jose.HeaderParameterNames;
@@ -20,7 +18,6 @@ import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.jwk.JWK;
-import io.setl.rdf.normalization.RdfNormalize;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,7 +70,7 @@ public class JsonWebEmbeddedSignatureUtils {
 			final String hash = getHash(normalized);
 			return getSignature(hash, jwk);
 
-		} catch (JsonLdError | IOException | RdfWriterException | UnsupportedContentException | NoSuchAlgorithmException |
+		} catch (JsonLdError | IOException | RdfConsumerException | NoSuchAlgorithmException |
 		         JOSEException e) {
 			throw new SignatureException(e);
 		}
@@ -92,7 +89,7 @@ public class JsonWebEmbeddedSignatureUtils {
 			final JWSVerifier verifier = getJWSVerifier(jwk);
 			return verifySignature(jsonLd, signature, verifier);
 
-		} catch (JsonLdError | IOException | RdfWriterException | UnsupportedContentException | NoSuchAlgorithmException | ParseException |
+		} catch (JsonLdError | IOException | RdfConsumerException | NoSuchAlgorithmException | ParseException |
 		         JOSEException e) {
 			throw new SignatureException(e);
 		}
@@ -111,7 +108,7 @@ public class JsonWebEmbeddedSignatureUtils {
 			final JWSVerifier verifier = getJWSVerifier(certificate);
 			return verifySignature(jsonLd, signature, verifier);
 
-		} catch (JsonLdError | IOException | RdfWriterException | UnsupportedContentException | NoSuchAlgorithmException | ParseException |
+		} catch (JsonLdError | IOException | RdfConsumerException | NoSuchAlgorithmException | ParseException |
 		         JOSEException e) {
 			throw new SignatureException(e);
 		}
@@ -120,21 +117,19 @@ public class JsonWebEmbeddedSignatureUtils {
 	/**
 	 * Normalizes JSON-LD input based on
 	 * <a href="https://w3c.github.io/json-ld-api/#rdf-serialization-deserialization-algorithms">RDF Serialization/Deserialization Algorithms</a>
-	 * <a href="https://w3c-ccg.github.io/rdf-dataset-canonicalization/spec/index.html">RDF Dataset Canonicalization</a>
+	 * <a href="https://www.w3.org/TR/rdf-canon/">RDF Dataset Canonicalization (RDFC-1.0)</a>
 	 */
-	private static String normalize(String input) throws JsonLdError, IOException, RdfWriterException, UnsupportedContentException {
-		// Load JsonDocument
+	private static String normalize(String input) throws JsonLdError, IOException, RdfConsumerException {
 		final JsonDocument jsonDocument;
 		try (final Reader reader = new StringReader(input)) {
 			jsonDocument = JsonDocument.of(reader);
 		}
-		// Convert to RDF
-		final RdfDataset rdfDataset = JsonLd.toRdf(jsonDocument).options(getJsonLdOptionsWithPreloadedContexts()).get();
-		// Normalize RDF with URDNA 2015 algorithm
-		final RdfDataset normalized = RdfNormalize.normalize(rdfDataset);
-		// Export RDF as String
+
+		final RdfCanon canon = RdfCanon.create(HASH_ALGORITHM_SHA256);
+		JsonLd.toRdf(jsonDocument).options(getJsonLdOptionsWithPreloadedContexts()).provide(canon);
+
 		try (final StringWriter writer = new StringWriter()) {
-			RdfProvider.provider().createWriter(MediaType.N_QUADS, writer).write(normalized);
+			canon.provide(new NQuadsWriter(writer));
 			return writer.toString();
 		}
 	}
@@ -202,7 +197,7 @@ public class JsonWebEmbeddedSignatureUtils {
 	 * Checks the signature of the jsonLd with the specified verifier. The jsonLd is normalized before checking the signature.
 	 */
 	private static boolean verifySignature(String jsonLd, String signature, JWSVerifier verifier)
-			throws JsonLdError, IOException, RdfWriterException, UnsupportedContentException, NoSuchAlgorithmException, ParseException,
+			throws JsonLdError, IOException, RdfConsumerException, NoSuchAlgorithmException, ParseException,
 			JOSEException {
 		final String normalized = normalize(jsonLd);
 		final String hash = getHash(normalized);
