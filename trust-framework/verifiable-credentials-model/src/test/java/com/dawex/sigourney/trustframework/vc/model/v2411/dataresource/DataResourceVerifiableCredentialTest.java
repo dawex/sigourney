@@ -4,12 +4,12 @@ import com.dawex.sigourney.trustframework.vc.model.shared.DefaultFormatProvider;
 import com.dawex.sigourney.trustframework.vc.model.v2411.common.ExposedThrough;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serialization.JacksonModuleFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -34,14 +34,14 @@ class DataResourceVerifiableCredentialTest {
 		formatProvider.setFormat(Format.DATA_RESOURCE_COPYRIGHT_OWNED_BY, "./copyrightOwnedBy/%s");
 		formatProvider.setFormat(Format.DATA_RESOURCE_PRODUCED_BY, "./producedBy/%s");
 
-		objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-		objectMapper.registerModule(
-				JacksonModuleFactory.dataResourceSerializationModule(formatProvider, () -> "https://dawex.com"));
+		objectMapper = JsonMapper.builder()
+				.enable(SerializationFeature.INDENT_OUTPUT)
+				.addModule(JacksonModuleFactory.dataResourceSerializationModule(formatProvider, () -> "https://dawex.com"))
+				.build();
 	}
 
 	@Test
-	void shouldGenerateValidVerifiableCredentialForDataResource() throws JsonProcessingException {
+	void shouldGenerateValidVerifiableCredentialForDataResource() {
 		// given
 		final var verifiableCredential = getDataResourceVerifiableCredential();
 		// when

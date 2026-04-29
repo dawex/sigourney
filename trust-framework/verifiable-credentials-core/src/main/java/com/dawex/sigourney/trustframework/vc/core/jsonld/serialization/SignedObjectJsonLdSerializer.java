@@ -1,10 +1,8 @@
 package com.dawex.sigourney.trustframework.vc.core.jsonld.serialization;
 
 import com.dawex.sigourney.trustframework.vc.core.vc.signature.model.SignedObject;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-
-import java.io.IOException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
 
 public class SignedObjectJsonLdSerializer extends JsonLdSerializer<SignedObject> {
 
@@ -13,7 +11,7 @@ public class SignedObjectJsonLdSerializer extends JsonLdSerializer<SignedObject>
 	}
 
 	@Override
-	public void serialize(SignedObject value, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+	public void serialize(SignedObject value, JsonGenerator jsonGenerator, SerializationContext serializationContext) {
 		final Class<?> serializablePayloadClass = value.payload().getClass();
 		jsonGenerator.writeStartObject();
 		writeContext(serializablePayloadClass, jsonGenerator);

@@ -2,18 +2,18 @@ package com.dawex.sigourney.trustframework.vc.core.jsonld.serialization;
 
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdContexts;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdEmbeddedContext;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JsonLdContextsSerializerTest {
 
 	@Test
-	void withBaseContextShouldSerializeJsonLd() throws JsonProcessingException {
+	void withBaseContextShouldSerializeJsonLd()  {
 		@JsonLdContexts(addBaseContext = true)
 		class Test {
 		}
@@ -29,7 +29,7 @@ class JsonLdContextsSerializerTest {
 	}
 
 	@Test
-	void withEmbeddedContextShouldSerializeJsonLd() throws JsonProcessingException {
+	void withEmbeddedContextShouldSerializeJsonLd()  {
 		@JsonLdContexts(embeddedContexts = {
 				@JsonLdEmbeddedContext(term = "dw", iri = "https://dawex.com/dw")
 		})
@@ -47,7 +47,7 @@ class JsonLdContextsSerializerTest {
 	}
 
 	@Test
-	void withBaseAndEmbeddedContextShouldSerializeJsonLd() throws JsonProcessingException {
+	void withBaseAndEmbeddedContextShouldSerializeJsonLd()  {
 		@JsonLdContexts(
 				addBaseContext = true,
 				embeddedContexts = {@JsonLdEmbeddedContext(term = "dw", iri = "https://dawex.com/dw")}
@@ -67,7 +67,7 @@ class JsonLdContextsSerializerTest {
 	}
 
 	@Test
-	void withReferencedContextShouldSerializeJsonLd() throws JsonProcessingException {
+	void withReferencedContextShouldSerializeJsonLd()  {
 		@JsonLdContexts(referencedContexts = {"https://dawex.com/ref"})
 		class Test {
 		}
@@ -81,7 +81,7 @@ class JsonLdContextsSerializerTest {
 	}
 
 	@Test
-	void withMultipleReferencedContextShouldSerializeJsonLd() throws JsonProcessingException {
+	void withMultipleReferencedContextShouldSerializeJsonLd()  {
 		@JsonLdContexts(referencedContexts = {"https://dawex.com/ref", "https://dawex.com/ref2"})
 		class Test {
 		}
@@ -95,7 +95,7 @@ class JsonLdContextsSerializerTest {
 	}
 
 	@Test
-	void withMultipleReferencedAndBaseContextShouldSerializeJsonLd() throws JsonProcessingException {
+	void withMultipleReferencedAndBaseContextShouldSerializeJsonLd()  {
 		@JsonLdContexts(
 				addBaseContext = true,
 				referencedContexts = {"https://dawex.com/ref", "https://dawex.com/ref2"})
@@ -113,7 +113,7 @@ class JsonLdContextsSerializerTest {
 	}
 
 	@Test
-	void withEmbeddedAndReferencedContextShouldSerializeJsonLd() throws JsonProcessingException {
+	void withEmbeddedAndReferencedContextShouldSerializeJsonLd()  {
 		@JsonLdContexts(
 				embeddedContexts = {@JsonLdEmbeddedContext(term = "dw", iri = "https://dawex.com/dw")},
 				referencedContexts = {"https://dawex.com/ref", "https://dawex.com/ref2"})
@@ -131,7 +131,7 @@ class JsonLdContextsSerializerTest {
 	}
 
 	@Test
-	void withBaseAndEmbeddedAndReferencedContextShouldSerializeJsonLd() throws JsonProcessingException {
+	void withBaseAndEmbeddedAndReferencedContextShouldSerializeJsonLd()  {
 		@JsonLdContexts(
 				addBaseContext = true,
 				embeddedContexts = {@JsonLdEmbeddedContext(term = "dw", iri = "https://dawex.com/dw")},
@@ -151,13 +151,13 @@ class JsonLdContextsSerializerTest {
 	}
 
 	private static <T> ObjectMapper getObjectMapper(Class<T> testClass) {
-		final ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-
 		final var module = new SimpleModule();
 		module.addSerializer(testClass, new JsonLdSerializer<>(testClass));
 		module.addSerializer(JsonLdContexts.class, new JsonLdContextsSerializer(() -> "https://dawex.com/base"));
-		objectMapper.registerModule(module);
-		return objectMapper;
+
+		return JsonMapper.builder()
+				.enable(SerializationFeature.INDENT_OUTPUT)
+				.addModule(module)
+				.build();
 	}
 }

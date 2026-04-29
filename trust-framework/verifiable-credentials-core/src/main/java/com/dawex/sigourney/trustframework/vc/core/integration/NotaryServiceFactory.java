@@ -2,7 +2,7 @@ package com.dawex.sigourney.trustframework.vc.core.integration;
 
 import com.dawex.sigourney.trustframework.vc.core.integration.v1.NotaryServiceV1;
 import com.dawex.sigourney.trustframework.vc.core.integration.v2.NotaryServiceV2;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import java.net.http.HttpClient;
 

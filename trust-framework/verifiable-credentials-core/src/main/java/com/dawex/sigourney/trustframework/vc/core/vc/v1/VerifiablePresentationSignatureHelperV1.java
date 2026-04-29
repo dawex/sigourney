@@ -4,9 +4,9 @@ import com.dawex.sigourney.trustframework.vc.core.jose.exception.SignatureExcept
 import com.dawex.sigourney.trustframework.vc.core.vc.signature.ProofGenerator;
 import com.dawex.sigourney.trustframework.vc.core.vc.signature.model.SignedObject;
 import com.dawex.sigourney.trustframework.vc.core.vc.v1.model.VerifiablePresentation;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWK;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +46,7 @@ public class VerifiablePresentationSignatureHelperV1 {
 	private String jsonSerialize(Object value) {
 		try {
 			return objectMapper.writeValueAsString(value);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new SignatureException(e);
 		}
 	}

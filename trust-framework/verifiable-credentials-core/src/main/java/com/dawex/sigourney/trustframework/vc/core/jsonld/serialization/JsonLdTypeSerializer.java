@@ -1,16 +1,14 @@
 package com.dawex.sigourney.trustframework.vc.core.jsonld.serialization;
 
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdType;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
-import java.io.IOException;
-
-public class JsonLdTypeSerializer extends JsonSerializer<JsonLdType> {
+public class JsonLdTypeSerializer extends ValueSerializer<JsonLdType> {
 
 	@Override
-	public void serialize(JsonLdType jsonLdType, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+	public void serialize(JsonLdType jsonLdType, JsonGenerator jsonGenerator, SerializationContext serializationContext) {
 		if (jsonLdType.value().length == 0) {
 			jsonGenerator.writeNull();
 		} else if (jsonLdType.value().length == 1) {

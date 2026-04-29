@@ -1,18 +1,18 @@
 package com.dawex.sigourney.trustframework.vc.core.jsonld.serialization;
 
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdType;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JsonLdTypeSerializerTest {
 
 	@Test
-	void withNoTypeShouldSerialize() throws JsonProcessingException {
+	void withNoTypeShouldSerialize() {
 		@JsonLdType
 		class Test {
 		}
@@ -26,7 +26,7 @@ class JsonLdTypeSerializerTest {
 	}
 
 	@Test
-	void withSingleTypeShouldSerialize() throws JsonProcessingException {
+	void withSingleTypeShouldSerialize()  {
 		@JsonLdType("MyType")
 		class Test {
 		}
@@ -40,7 +40,7 @@ class JsonLdTypeSerializerTest {
 	}
 
 	@Test
-	void withMultipleTypesShouldSerialize() throws JsonProcessingException {
+	void withMultipleTypesShouldSerialize()  {
 		@JsonLdType({"MyType", "MyType2"})
 		class Test {
 		}
@@ -54,13 +54,13 @@ class JsonLdTypeSerializerTest {
 	}
 
 	private static <T> ObjectMapper getObjectMapper(Class<T> testClass) {
-		final ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-
 		final var module = new SimpleModule();
 		module.addSerializer(testClass, new JsonLdSerializer<>(testClass));
 		module.addSerializer(JsonLdType.class, new JsonLdTypeSerializer());
-		objectMapper.registerModule(module);
-		return objectMapper;
+
+		return JsonMapper.builder()
+				.enable(SerializationFeature.INDENT_OUTPUT)
+				.addModule(module)
+				.build();
 	}
 }

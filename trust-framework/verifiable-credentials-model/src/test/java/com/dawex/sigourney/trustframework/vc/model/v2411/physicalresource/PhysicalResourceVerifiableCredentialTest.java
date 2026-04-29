@@ -4,11 +4,11 @@ import com.dawex.sigourney.trustframework.vc.model.shared.DefaultFormatProvider;
 import com.dawex.sigourney.trustframework.vc.model.v2411.common.Address;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serialization.JacksonModuleFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -28,14 +28,14 @@ class PhysicalResourceVerifiableCredentialTest {
 		formatProvider.setFormat(Format.PHYSICAL_RESOURCE_CREDENTIAL_SUBJECT, "./resource/%s/cs");
 		formatProvider.setFormat(Format.PHYSICAL_RESOURCE_MAINTAINED_BY, "./maintainedBy/%s");
 
-		objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-		objectMapper.registerModule(
-				JacksonModuleFactory.physicalResourceSerializationModule(formatProvider, () -> "https://dawex.com"));
+		objectMapper = JsonMapper.builder()
+				.enable(SerializationFeature.INDENT_OUTPUT)
+				.addModule(JacksonModuleFactory.physicalResourceSerializationModule(formatProvider, () -> "https://dawex.com"))
+				.build();
 	}
 
 	@Test
-	void shouldGenerateValidVerifiableCredentialForPhysicalResource() throws JsonProcessingException {
+	void shouldGenerateValidVerifiableCredentialForPhysicalResource() {
 		// given
 		final var verifiableCredential = getPhysicalResourceVerifiableCredential();
 		// when

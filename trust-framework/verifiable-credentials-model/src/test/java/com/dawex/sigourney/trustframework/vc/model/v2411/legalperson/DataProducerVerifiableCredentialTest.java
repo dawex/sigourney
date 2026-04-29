@@ -4,11 +4,11 @@ import com.dawex.sigourney.trustframework.vc.model.shared.DefaultFormatProvider;
 import com.dawex.sigourney.trustframework.vc.model.v2411.common.Address;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serialization.JacksonModuleFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -27,14 +27,14 @@ class DataProducerVerifiableCredentialTest {
 		formatProvider.setFormat(Format.DATA_PRODUCER_VERIFIABLE_CREDENTIAL, "./dataProducers/%s/vc");
 		formatProvider.setFormat(Format.DATA_PRODUCER_CREDENTIAL_SUBJECT, "./dataProducers/%s/cs");
 
-		objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-
-		objectMapper.registerModules(JacksonModuleFactory.legalPersonSerializationModule(formatProvider, () -> "https://dawex.com"));
+		objectMapper = JsonMapper.builder()
+				.enable(SerializationFeature.INDENT_OUTPUT)
+				.addModule(JacksonModuleFactory.legalPersonSerializationModule(formatProvider, () -> "https://dawex.com"))
+				.build();
 	}
 
 	@Test
-	void shouldJsonSerializeVerifiableCredentialForDataProducer() throws JsonProcessingException {
+	void shouldJsonSerializeVerifiableCredentialForDataProducer() {
 		// given
 		final var verifiableCredential = getDataProducerVerifiableCredential();
 		// when

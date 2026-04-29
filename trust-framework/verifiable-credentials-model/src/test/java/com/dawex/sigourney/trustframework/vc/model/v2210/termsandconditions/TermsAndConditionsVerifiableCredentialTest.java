@@ -4,11 +4,11 @@ import com.dawex.sigourney.trustframework.vc.model.shared.DefaultFormatProvider;
 import com.dawex.sigourney.trustframework.vc.model.utils.TestUtils;
 import com.dawex.sigourney.trustframework.vc.model.v2210.serialization.Format;
 import com.dawex.sigourney.trustframework.vc.model.v2210.serialization.JacksonModuleFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -25,14 +25,14 @@ class TermsAndConditionsVerifiableCredentialTest {
 		formatProvider.setFormat(Format.TERMS_AND_CONDITIONS_CREDENTIAL_SUBJECT, "./termsAndConditions/%s");
 		formatProvider.setFormat(Format.TERMS_AND_CONDITIONS_VERIFIABLE_CREDENTIAL, "./termsAndConditions/%s");
 
-		objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-		objectMapper.registerModule(
-				JacksonModuleFactory.termsAndConditionsSerializationModule(formatProvider, () -> "https://dawex.com"));
+		objectMapper = JsonMapper.builder()
+				.enable(SerializationFeature.INDENT_OUTPUT)
+				.addModule(JacksonModuleFactory.termsAndConditionsSerializationModule(formatProvider, () -> "https://dawex.com"))
+				.build();
 	}
 
 	@Test
-	void shouldGenerateValidVerifiableCredentialForTermsAndconditions() throws JsonProcessingException {
+	void shouldGenerateValidVerifiableCredentialForTermsAndconditions() {
 		// given
 		final var verifiableCredential = getTermsAndConditionsVerifiableCredential();
 		// when

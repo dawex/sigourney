@@ -3,11 +3,11 @@ package com.dawex.sigourney.trustframework.vc.core.jsonld.serialization;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.CompositeValue;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.JsonLdValueObject;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JsonLdPropertySerializerTest {
 
 	@Test
-	void withNullPropertyShouldSerialize() throws JsonProcessingException {
+	void withNullPropertyShouldSerialize()  {
 		record Test(@JsonLdProperty("property") String property) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -35,7 +35,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withAnnotatedAndNotAnnotatedPropertyShouldSerialize() throws JsonProcessingException {
+	void withAnnotatedAndNotAnnotatedPropertyShouldSerialize()  {
 		record Test(@JsonLdProperty("property") String property, String otherProperty) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -48,7 +48,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withNamespaceShouldSerialize() throws JsonProcessingException {
+	void withNamespaceShouldSerialize()  {
 		record Test(@JsonLdProperty(value = "property", namespace = "dw") String property) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -61,7 +61,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withFormatShouldSerialize() throws JsonProcessingException {
+	void withFormatShouldSerialize()  {
 		record Test(@JsonLdProperty(value = "property", formatName = "MY_FORMAT") String property) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -74,7 +74,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withMandatoryShouldSerialize() throws JsonProcessingException {
+	void withMandatoryShouldSerialize()  {
 		record Test(@JsonLdProperty(value = "property", mandatory = true) String property) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -93,7 +93,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withMandatoryCollectionShouldSerialize() throws JsonProcessingException {
+	void withMandatoryCollectionShouldSerialize()  {
 		record Test(@JsonLdProperty(value = "property", mandatory = true) Collection<String> property) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -112,7 +112,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withCollectionPropertyShouldSerialize() throws JsonProcessingException {
+	void withCollectionPropertyShouldSerialize()  {
 		record Test(@JsonLdProperty("property") Collection<String> property) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -125,7 +125,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withCompositePropertyShouldSerialize() throws JsonProcessingException {
+	void withCompositePropertyShouldSerialize()  {
 		class Property implements CompositeValue {
 
 			private String property;
@@ -151,7 +151,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withEnumPropertyShouldSerialize() throws JsonProcessingException {
+	void withEnumPropertyShouldSerialize()  {
 		enum TestEnum {
 			VAL1("val1");
 
@@ -178,7 +178,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withZonedDateTimePropertyShouldSerialize() throws JsonProcessingException {
+	void withZonedDateTimePropertyShouldSerialize()  {
 		record Test(@JsonLdProperty("property") ZonedDateTime property) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -191,7 +191,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withOffsetDateTimePropertyShouldSerialize() throws JsonProcessingException {
+	void withOffsetDateTimePropertyShouldSerialize()  {
 		record Test(@JsonLdProperty("property") OffsetDateTime property) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -204,7 +204,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withInstantPropertyShouldSerialize() throws JsonProcessingException {
+	void withInstantPropertyShouldSerialize()  {
 		record Test(@JsonLdProperty("property") Instant property) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -218,7 +218,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withLocalDateTimePropertyShouldSerialize() throws JsonProcessingException {
+	void withLocalDateTimePropertyShouldSerialize()  {
 		record Test(@JsonLdProperty("property") LocalDateTime property) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -231,7 +231,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withLocalDatePropertyShouldSerialize() throws JsonProcessingException {
+	void withLocalDatePropertyShouldSerialize()  {
 		record Test(@JsonLdProperty("property") LocalDate property) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -244,7 +244,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withInheritanceShouldSerialize() throws JsonProcessingException {
+	void withInheritanceShouldSerialize()  {
 		class ParentTest {
 			@JsonLdProperty("parent")
 			private final String parentProperty;
@@ -303,7 +303,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withTypedPropertyShouldSerialize() throws JsonProcessingException {
+	void withTypedPropertyShouldSerialize()  {
 		record Test(@JsonLdProperty(value = "property", type = "xsd:url") String property) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -319,7 +319,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withJsonLdValueObjectPropertyShouldSerialize() throws JsonProcessingException {
+	void withJsonLdValueObjectPropertyShouldSerialize()  {
 		record Test(@JsonLdProperty(value = "property") JsonLdValueObject<String> property) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -335,7 +335,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withCollectionOfJsonLdValueObjectPropertyShouldSerialize() throws JsonProcessingException {
+	void withCollectionOfJsonLdValueObjectPropertyShouldSerialize()  {
 		record Test(@JsonLdProperty(value = "property") Collection<JsonLdValueObject<String>> property) {
 		}
 		final ObjectMapper objectMapper = getObjectMapper(Test.class);
@@ -357,7 +357,7 @@ class JsonLdPropertySerializerTest {
 	}
 
 	@Test
-	void withGetterConfigurationShouldSerialize() throws JsonProcessingException {
+	void withGetterConfigurationShouldSerialize()  {
 		class ParentTest {
 			private final String parentProperty;
 
@@ -408,12 +408,12 @@ class JsonLdPropertySerializerTest {
 	}
 
 	private static <T> ObjectMapper getObjectMapper(Class<T> testClass) {
-		final ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-
 		final var module = new SimpleModule();
 		module.addSerializer(testClass, new JsonLdSerializer<>(testClass, format -> Optional.of("/test/" + format + "/%s")));
-		objectMapper.registerModule(module);
-		return objectMapper;
+
+		return JsonMapper.builder()
+				.enable(SerializationFeature.INDENT_OUTPUT)
+				.addModule(module)
+				.build();
 	}
 }

@@ -12,14 +12,14 @@ import com.dawex.sigourney.trustframework.vc.core.utils.ProofSignatureExpectatio
 import com.dawex.sigourney.trustframework.vc.core.vc.signature.model.Proof;
 import com.dawex.sigourney.trustframework.vc.core.vc.signature.model.SignedObject;
 import com.dawex.sigourney.trustframework.vc.core.vc.v1.model.VerifiablePresentation;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nimbusds.jose.jwk.JWK;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -117,11 +117,6 @@ public class VerifiablePresentationSignatureHelperV1Test {
 	}
 
 	private static ObjectMapper getObjectMapper() {
-		final ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-
-		objectMapper.registerModule(new JavaTimeModule());
-
 		final SimpleModule module = new SimpleModule();
 		module.addSerializer(JsonLdContexts.class, new JsonLdContextsSerializer(() -> "https://dawex.com"));
 		module.addSerializer(JsonLdType.class, new JsonLdTypeSerializer());
@@ -131,8 +126,10 @@ public class VerifiablePresentationSignatureHelperV1Test {
 		module.addSerializer(SignedObject.class, new SignedObjectJsonLdSerializer(formatName -> Optional.empty()));
 		module.addSerializer(VerifiablePresentation.class,
 				new JsonLdSerializer<>(VerifiablePresentation.class, formatName -> Optional.empty()));
-		objectMapper.registerModule(module);
 
-		return objectMapper;
+		return JsonMapper.builder()
+				.enable(SerializationFeature.INDENT_OUTPUT)
+				.addModule(module)
+				.build();
 	}
 }

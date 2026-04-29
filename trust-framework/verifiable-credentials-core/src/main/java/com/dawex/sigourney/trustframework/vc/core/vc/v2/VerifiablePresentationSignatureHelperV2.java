@@ -1,13 +1,13 @@
 package com.dawex.sigourney.trustframework.vc.core.vc.v2;
 
-import com.dawex.sigourney.trustframework.vc.core.jose.signature.JsonWebEnvelopedSignatureUtils;
 import com.dawex.sigourney.trustframework.vc.core.jose.exception.SignatureException;
+import com.dawex.sigourney.trustframework.vc.core.jose.signature.JsonWebEnvelopedSignatureUtils;
 import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.EnvelopedVerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.VerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.VerifiablePresentation;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWK;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,7 +55,7 @@ public class VerifiablePresentationSignatureHelperV2 {
 	private String jsonSerialize(Object value) {
 		try {
 			return objectMapper.writeValueAsString(value);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new SignatureException(e);
 		}
 	}

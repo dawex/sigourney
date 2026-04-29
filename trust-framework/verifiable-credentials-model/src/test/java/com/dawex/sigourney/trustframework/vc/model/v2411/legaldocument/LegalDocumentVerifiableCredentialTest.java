@@ -3,13 +3,13 @@ package com.dawex.sigourney.trustframework.vc.model.v2411.legaldocument;
 import com.dawex.sigourney.trustframework.vc.model.shared.DefaultFormatProvider;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serialization.Format;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serialization.JacksonModuleFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -33,17 +33,16 @@ class LegalDocumentVerifiableCredentialTest {
 		formatProvider.setFormat(Format.LEGAL_DOCUMENT_CREDENTIAL_SUBJECT, "./legalDocument/%s/cs");
 		formatProvider.setFormat(Format.LEGAL_DOCUMENT_INVOLVED_PARTIES, "./involvedParty/%s");
 
-		objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-		objectMapper.registerModule(
-				JacksonModuleFactory.legalDocumentSerializationModule(formatProvider, () -> "https://dawex.com"));
+		objectMapper = JsonMapper.builder()
+				.enable(SerializationFeature.INDENT_OUTPUT)
+				.addModule(JacksonModuleFactory.legalDocumentSerializationModule(formatProvider, () -> "https://dawex.com"))
+				.build();
 	}
 
 	@ParameterizedTest
 	@MethodSource("getLegalDocumentVerifiableCredentials")
 	void shouldGenerateValidVerifiableCredentialForLegalDocument(
-			LegalDocumentVerifiableCredential verifiableCredential, String expectedType)
-			throws JsonProcessingException {
+			LegalDocumentVerifiableCredential verifiableCredential, String expectedType) {
 		// when
 		final String serializedVc = objectMapper.writeValueAsString(verifiableCredential);
 		// then

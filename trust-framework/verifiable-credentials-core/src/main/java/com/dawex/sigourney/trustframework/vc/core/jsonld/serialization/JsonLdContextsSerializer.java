@@ -2,14 +2,13 @@ package com.dawex.sigourney.trustframework.vc.core.jsonld.serialization;
 
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdContexts;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdEmbeddedContext;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
-import java.io.IOException;
 import java.util.function.Supplier;
 
-public class JsonLdContextsSerializer extends JsonSerializer<JsonLdContexts> {
+public class JsonLdContextsSerializer extends ValueSerializer<JsonLdContexts> {
 
 	private static final String CONTEXT_BASE = "@base";
 
@@ -20,8 +19,7 @@ public class JsonLdContextsSerializer extends JsonSerializer<JsonLdContexts> {
 	}
 
 	@Override
-	public void serialize(JsonLdContexts jsonLdContexts, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
-			throws IOException {
+	public void serialize(JsonLdContexts jsonLdContexts, JsonGenerator jsonGenerator, SerializationContext serializationContext) {
 		final boolean hasEmbeddedContexts =
 				(jsonLdContexts.addBaseContext() && baseIri != null) || jsonLdContexts.embeddedContexts().length > 0;
 		final boolean hasMultipleContexts = ((hasEmbeddedContexts ? 1 : 0) + jsonLdContexts.referencedContexts().length) > 1;
@@ -39,18 +37,18 @@ public class JsonLdContextsSerializer extends JsonSerializer<JsonLdContexts> {
 		}
 	}
 
-	private void writeEmbeddedContexts(JsonLdContexts jsonLdContexts, JsonGenerator jsonGenerator) throws IOException {
+	private void writeEmbeddedContexts(JsonLdContexts jsonLdContexts, JsonGenerator jsonGenerator) {
 		jsonGenerator.writeStartObject();
 		if (jsonLdContexts.addBaseContext() && baseIri != null) {
-			jsonGenerator.writeStringField(CONTEXT_BASE, baseIri.get());
+			jsonGenerator.writeStringProperty(CONTEXT_BASE, baseIri.get());
 		}
 		for (JsonLdEmbeddedContext embeddedContext : jsonLdContexts.embeddedContexts()) {
-			jsonGenerator.writeStringField(embeddedContext.term(), embeddedContext.iri());
+			jsonGenerator.writeStringProperty(embeddedContext.term(), embeddedContext.iri());
 		}
 		jsonGenerator.writeEndObject();
 	}
 
-	private static void writeReferencedContexts(JsonLdContexts jsonLdContexts, JsonGenerator jsonGenerator) throws IOException {
+	private static void writeReferencedContexts(JsonLdContexts jsonLdContexts, JsonGenerator jsonGenerator) {
 		for (String referencedContext : jsonLdContexts.referencedContexts()) {
 			jsonGenerator.writeString(referencedContext);
 		}

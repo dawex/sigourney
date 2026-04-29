@@ -5,11 +5,11 @@ import com.dawex.sigourney.trustframework.vc.model.utils.TestUtils;
 import com.dawex.sigourney.trustframework.vc.model.v2210.common.Address;
 import com.dawex.sigourney.trustframework.vc.model.v2210.serialization.Format;
 import com.dawex.sigourney.trustframework.vc.model.v2210.serialization.JacksonModuleFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -26,13 +26,14 @@ class LegalPersonVerifiableCredentialTest {
 		formatProvider.setFormat(Format.ORGANISATION_CREDENTIAL_SUBJECT, "./organisations/%s");
 		formatProvider.setFormat(Format.ORGANISATION_ISSUER, "./organisations/%s");
 
-		objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-		objectMapper.registerModule(JacksonModuleFactory.organisationSerializationModule(formatProvider, () -> "https://dawex.com"));
+		objectMapper = JsonMapper.builder()
+				.enable(SerializationFeature.INDENT_OUTPUT)
+				.addModule(JacksonModuleFactory.organisationSerializationModule(formatProvider, () -> "https://dawex.com"))
+				.build();
 	}
 
 	@Test
-	void shouldGenerateValidVerifiableCredentialForOrganisation() throws JsonProcessingException {
+	void shouldGenerateValidVerifiableCredentialForOrganisation() {
 		// given
 		final var verifiableCredential = getOrganisationVerifiableCredential();
 		// when

@@ -4,7 +4,7 @@ import com.dawex.sigourney.notary.client.v2.ApiClient;
 import com.dawex.sigourney.notary.client.v2.ApiException;
 import com.dawex.sigourney.notary.client.v2.ApiResponse;
 import com.dawex.sigourney.notary.client.v2.Pair;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +37,7 @@ public class RegistrationNumberApi {
 
 	private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
 
-	private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+	private final Consumer<HttpResponse<InputStream>> memberVarAsyncResponseInterceptor;
 
 	public RegistrationNumberApi() {
 		this(new ApiClient());
@@ -459,8 +459,8 @@ public class RegistrationNumberApi {
 	private static ApiResponse<String> createApiResponse(HttpResponse<InputStream> localVarResponse) {
 		final String data = Optional.ofNullable(localVarResponse.body())
 				.flatMap(in -> {
-					try {
-						return Optional.of(new String(in.readAllBytes())); // closes the InputStream
+					try (in) {
+						return Optional.of(new String(in.readAllBytes()));
 					} catch (IOException e) {
 						return Optional.empty();
 					}

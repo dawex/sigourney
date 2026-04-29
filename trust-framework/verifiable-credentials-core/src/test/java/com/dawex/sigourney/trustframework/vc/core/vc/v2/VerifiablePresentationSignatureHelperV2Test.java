@@ -10,10 +10,6 @@ import com.dawex.sigourney.trustframework.vc.core.jsonld.serialization.JsonLdTyp
 import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.EnvelopedVerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.VerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.core.vc.v2.model.VerifiablePresentation;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nimbusds.jose.HeaderParameterNames;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JOSEObjectType;
@@ -25,6 +21,10 @@ import com.nimbusds.jose.jwk.RSAKey;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -141,11 +141,6 @@ public class VerifiablePresentationSignatureHelperV2Test {
 	}
 
 	private static ObjectMapper getObjectMapper() {
-		final ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-
-		objectMapper.registerModule(new JavaTimeModule());
-
 		final SimpleModule module = new SimpleModule();
 		module.addSerializer(JsonLdContexts.class, new JsonLdContextsSerializer(() -> "https://dawex.com"));
 		module.addSerializer(JsonLdType.class, new JsonLdTypeSerializer());
@@ -155,8 +150,10 @@ public class VerifiablePresentationSignatureHelperV2Test {
 				new JsonLdSerializer<>(VerifiablePresentation.class, formatName -> Optional.empty()));
 		module.addSerializer(EnvelopedVerifiableCredential.class,
 				new JsonLdSerializer<>(EnvelopedVerifiableCredential.class, formatName -> Optional.empty()));
-		objectMapper.registerModule(module);
 
-		return objectMapper;
+		return JsonMapper.builder()
+				.enable(SerializationFeature.INDENT_OUTPUT)
+				.addModule(module)
+				.build();
 	}
 }

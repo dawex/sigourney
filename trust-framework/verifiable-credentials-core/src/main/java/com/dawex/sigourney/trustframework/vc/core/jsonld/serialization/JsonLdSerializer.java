@@ -6,14 +6,14 @@ import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdContex
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdProperty;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.annotation.JsonLdType;
 import com.dawex.sigourney.trustframework.vc.core.jsonld.exception.JsonLdSerializationException;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import jakarta.annotation.Nullable;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class JsonLdSerializer<T> extends JsonSerializer<T> {
+public class JsonLdSerializer<T> extends ValueSerializer<T> {
 
 	private static final String FIELD_CONTEXT = "@context";
 
@@ -59,7 +59,7 @@ public class JsonLdSerializer<T> extends JsonSerializer<T> {
 	}
 
 	@Override
-	public void serialize(T value, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+	public void serialize(T value, JsonGenerator jsonGenerator, SerializationContext serializationContext) {
 		jsonGenerator.writeStartObject();
 		writeContext(serializableObjectClass, jsonGenerator);
 		writeType(serializableObjectClass, jsonGenerator);
@@ -67,21 +67,21 @@ public class JsonLdSerializer<T> extends JsonSerializer<T> {
 		jsonGenerator.writeEndObject();
 	}
 
-	protected void writeContext(Class<?> targetClass, JsonGenerator jsonGenerator) throws IOException {
+	protected void writeContext(Class<?> targetClass, JsonGenerator jsonGenerator) {
 		final Optional<JsonLdContexts> jsonLdContextsOpt = findAnnotation(targetClass, JsonLdContexts.class);
 		if (jsonLdContextsOpt.isPresent()) {
 			final JsonLdContexts jsonLdContexts = jsonLdContextsOpt.get();
 			// write context
-			jsonGenerator.writeObjectField(FIELD_CONTEXT, jsonLdContexts);
+			jsonGenerator.writePOJOProperty(FIELD_CONTEXT, jsonLdContexts);
 		}
 	}
 
-	protected void writeType(Class<?> targetClass, JsonGenerator jsonGenerator) throws IOException {
+	protected void writeType(Class<?> targetClass, JsonGenerator jsonGenerator) {
 		final Optional<JsonLdType> jsonLdTypeOpt = findAnnotation(targetClass, JsonLdType.class);
 		if (jsonLdTypeOpt.isPresent()) {
 			final JsonLdType jsonLdType = jsonLdTypeOpt.get();
 			// write type
-			jsonGenerator.writeObjectField(FIELD_TYPE, jsonLdType);
+			jsonGenerator.writePOJOProperty(FIELD_TYPE, jsonLdType);
 		}
 	}
 
@@ -104,11 +104,11 @@ public class JsonLdSerializer<T> extends JsonSerializer<T> {
 		getJsonLdFields(value, targetClass).forEach(jsonLdField -> {
 			try {
 				if (jsonLdField.value() == null) {
-					jsonGenerator.writeNullField(jsonLdField.property());
+					jsonGenerator.writeNullProperty(jsonLdField.property());
 				} else {
-					jsonGenerator.writeObjectField(jsonLdField.property(), jsonLdField.value());
+					jsonGenerator.writePOJOProperty(jsonLdField.property(), jsonLdField.value());
 				}
-			} catch (IOException e) {
+			} catch (JacksonException e) {
 				throw new JsonLdSerializationException(e);
 			}
 		});
@@ -196,9 +196,8 @@ public class JsonLdSerializer<T> extends JsonSerializer<T> {
 		}
 
 		final Object jsonFieldValue;
-		if (value instanceof JsonLdValueObject<?> valueObject) {
-			return new JsonLdValueObject<>(valueObject.type(),
-					getFormattedFieldValue(jsonLdProperty.formatName(), valueObject.value()));
+		if (value instanceof JsonLdValueObject<?>(String type, Object value1)) {
+			return new JsonLdValueObject<>(type, getFormattedFieldValue(jsonLdProperty.formatName(), value1));
 		} else {
 			jsonFieldValue = getFormattedFieldValue(jsonLdProperty.formatName(), value);
 			// wrap with type if any

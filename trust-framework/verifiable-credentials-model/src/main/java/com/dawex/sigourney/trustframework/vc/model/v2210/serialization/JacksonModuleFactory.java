@@ -30,8 +30,8 @@ import com.dawex.sigourney.trustframework.vc.model.v2210.organisation.Organisati
 import com.dawex.sigourney.trustframework.vc.model.v2210.organisation.OrganisationVerifiableCredential;
 import com.dawex.sigourney.trustframework.vc.model.v2210.termsandconditions.TermsAndConditionsCredentialSubject;
 import com.dawex.sigourney.trustframework.vc.model.v2210.termsandconditions.TermsAndConditionsVerifiableCredential;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.JacksonModule;
+import tools.jackson.databind.module.SimpleModule;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -41,8 +41,8 @@ public class JacksonModuleFactory {
 	/**
 	 * Create a configured Jackson module for serializing organisation verifiable credentials
 	 */
-	public static Module organisationSerializationModule(FormatProvider formatProvider, Supplier<String> baseIriSupplier) {
-		final List<Class> domainClasses = List.of(Address.class,
+	public static JacksonModule organisationSerializationModule(FormatProvider formatProvider, Supplier<String> baseIriSupplier) {
+		final List<Class<?>> domainClasses = List.of(Address.class,
 				OrganisationCredentialSubject.class,
 				OrganisationLegalRegistrationNumber.class,
 				OrganisationVerifiableCredential.class);
@@ -52,8 +52,8 @@ public class JacksonModuleFactory {
 	/**
 	 * Create a configured Jackson module for serializing data product verifiable credentials
 	 */
-	public static Module dataProductSerializationModule(FormatProvider formatProvider, Supplier<String> baseIriSupplier) {
-		final List<Class> domainClasses = List.of(AggregationOf.class,
+	public static JacksonModule dataProductSerializationModule(FormatProvider formatProvider, Supplier<String> baseIriSupplier) {
+		final List<Class<?>> domainClasses = List.of(AggregationOf.class,
 				DataAccountExport.class,
 				DataProductCredentialSubject.class,
 				DataProductVerifiableCredential.class,
@@ -66,8 +66,8 @@ public class JacksonModuleFactory {
 	/**
 	 * Create a configured Jackson module for serializing terms & conditions verifiable credentials
 	 */
-	public static Module dataResourcesSerializationModule(FormatProvider formatProvider, Supplier<String> baseIriSupplier) {
-		final List<Class> domainClasses = List.of(DataResourceCredentialSubject.class, DataResourceVerifiableCredential.class,
+	public static JacksonModule dataResourcesSerializationModule(FormatProvider formatProvider, Supplier<String> baseIriSupplier) {
+		final List<Class<?>> domainClasses = List.of(DataResourceCredentialSubject.class, DataResourceVerifiableCredential.class,
 				Distribution.class, ExposedThrough.class, Location.class, ProducedBy.class);
 		return createVerifiableCredentialSerializationModule(formatProvider, baseIriSupplier, domainClasses);
 	}
@@ -75,16 +75,16 @@ public class JacksonModuleFactory {
 	/**
 	 * Create a configured Jackson module for serializing terms & conditions verifiable credentials
 	 */
-	public static Module termsAndConditionsSerializationModule(FormatProvider formatProvider, Supplier<String> baseIriSupplier) {
-		final List<Class> domainClasses = List.of(TermsAndConditionsVerifiableCredential.class, TermsAndConditionsCredentialSubject.class);
+	public static JacksonModule termsAndConditionsSerializationModule(FormatProvider formatProvider, Supplier<String> baseIriSupplier) {
+		final List<Class<?>> domainClasses = List.of(TermsAndConditionsVerifiableCredential.class, TermsAndConditionsCredentialSubject.class);
 		return createVerifiableCredentialSerializationModule(formatProvider, baseIriSupplier, domainClasses);
 	}
 
 	private static SimpleModule createVerifiableCredentialSerializationModule(FormatProvider formatProvider,
-			Supplier<String> baseIriSupplier, List<Class> domainClasses) {
+			Supplier<String> baseIriSupplier, List<Class<?>> domainClasses) {
 		final SimpleModule module = new SimpleModule();
 
-		domainClasses.forEach(clazz -> module.addSerializer(clazz, new JsonLdSerializer<>(clazz, formatProvider)));
+		domainClasses.forEach(clazz -> addJsonLdSerializer(module, clazz, formatProvider));
 
 		module.addSerializer(JsonLdContexts.class, new JsonLdContextsSerializer(baseIriSupplier));
 		module.addSerializer(JsonLdType.class, new JsonLdTypeSerializer());
@@ -95,10 +95,14 @@ public class JacksonModuleFactory {
 		return module;
 	}
 
+	private static <T> void addJsonLdSerializer(SimpleModule module, Class<T> clazz, FormatProvider formatProvider) {
+		module.addSerializer(clazz, new JsonLdSerializer<>(clazz, formatProvider));
+	}
+
 	/**
 	 * Create a configured Jackson module for serializing public keys
 	 */
-	public static Module sharedSerializationModule(Supplier<String> baseIriSupplier) {
+	public static JacksonModule sharedSerializationModule(Supplier<String> baseIriSupplier) {
 		final SimpleModule module = new SimpleModule();
 		module.addSerializer(JsonLdContexts.class, new JsonLdContextsSerializer(baseIriSupplier));
 		module.addSerializer(JsonLdType.class, new JsonLdTypeSerializer());

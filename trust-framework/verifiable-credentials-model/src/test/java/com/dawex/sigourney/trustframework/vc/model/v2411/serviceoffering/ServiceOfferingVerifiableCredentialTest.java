@@ -14,11 +14,11 @@ import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.legaldo
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.legaldocument.LegalDocument;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.legaldocument.LegallyBindingAct;
 import com.dawex.sigourney.trustframework.vc.model.v2411.serviceoffering.providedby.ProvidedByLegalPerson;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -47,13 +47,14 @@ class ServiceOfferingVerifiableCredentialTest {
 		formatProvider.setFormat(Format.LEGAL_DOCUMENT_INVOLVED_PARTIES, "./involvedParty/%s");
 		formatProvider.setFormat(Format.TERMS_AND_CONDITIONS_URL, "./termsAndConditions/%s");
 
-		objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-		objectMapper.registerModule(JacksonModuleFactory.serviceOfferingSerializationModule(formatProvider, () -> "https://dawex.com"));
+		objectMapper = JsonMapper.builder()
+				.enable(SerializationFeature.INDENT_OUTPUT)
+				.addModule(JacksonModuleFactory.serviceOfferingSerializationModule(formatProvider, () -> "https://dawex.com"))
+				.build();
 	}
 
 	@Test
-	void shouldGenerateValidVerifiableCredentialForServiceoffering() throws JsonProcessingException {
+	void shouldGenerateValidVerifiableCredentialForServiceoffering() {
 		// given
 		final var verifiableCredential = getServiceOfferingVerifiableCredential();
 		// when

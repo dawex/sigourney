@@ -8,7 +8,7 @@ import com.dawex.sigourney.trustframework.vc.core.integration.NotaryServiceFacto
 import com.dawex.sigourney.trustframework.vc.core.integration.model.RegistrationNumberType;
 import com.dawex.sigourney.trustframework.vc.core.integration.model.RegistrationNumberVC;
 import com.dawex.sigourney.trustframework.vc.core.integration.v2.client.RegistrationNumberApi;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import java.net.http.HttpClient;
 
