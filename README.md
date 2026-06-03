@@ -45,7 +45,7 @@ Dependency:
 <dependency>
     <groupId>com.dawex.sigourney</groupId>
     <artifactId>sigourney-verifiable-credentials-model</artifactId>
-    <version>2.3.0-SNAPSHOT</version>
+    <version>2.3.0</version>
 </dependency>
 ```
 
