@@ -6,7 +6,7 @@
 
 	<groupId>com.dawex.sigourney</groupId>
 	<artifactId>sigourney-trustframework</artifactId>
-	<version>2.2.0</version>
+	<version>2.3.0</version>
 	<packaging>pom</packaging>
 
 	<name>sigourney-trustframework</name>
@@ -15,30 +15,30 @@
 
 	<properties>
 		<java.version>21</java.version>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>
+		<maven.compiler.release>21</maven.compiler.release>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<jreleaser-maven-plugin.version>1.19.0</jreleaser-maven-plugin.version>
-		<maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
-		<maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
-		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
-		<maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
+		<jreleaser-maven-plugin.version>1.23.0</jreleaser-maven-plugin.version>
+		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+		<maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
 
-		<assert4j.version>3.27.3</assert4j.version>
-		<bouncycastle.version>1.80</bouncycastle.version>
-		<jackson.version>2.19.1</jackson.version>
+		<assertj.version>3.27.7</assertj.version>
+		<bouncycastle.version>1.84</bouncycastle.version>
+		<jackson.version>2.21.4</jackson.version>
 		<jakarta-annotation.version>3.0.0</jakarta-annotation.version>
 		<jakarta-json.version>2.0.1</jakarta-json.version>
-		<json-path.version>2.9.0</json-path.version>
-		<junit.version>5.13.3</junit.version>
-		<mockito.version>5.18.0</mockito.version>
-		<nimbus-jose-jwt.version>10.3.1</nimbus-jose-jwt.version>
-		<openapi-generator.version>7.14.0</openapi-generator.version>
-		<rdf-urdna.version>1.4</rdf-urdna.version>
-		<swagger.version>2.2.34</swagger.version>
-		<titanium-json-ld.version>1.6.0</titanium-json-ld.version>
+		<json-path.version>2.10.0</json-path.version>
+		<jspecify.version>1.0.0</jspecify.version>
+		<junit.version>5.14.4</junit.version>
+		<mockito.version>5.23.0</mockito.version>
+		<nimbus-jose-jwt.version>10.9</nimbus-jose-jwt.version>
+		<openapi-generator.version>7.22.0</openapi-generator.version>
+		<swagger.version>2.2.48</swagger.version>
+		<titanium-json-ld.version>1.7.0</titanium-json-ld.version>
+		<titanium-rdfc.version>2.0.0</titanium-rdfc.version>
 	</properties>
 
 	<modules>
@@ -106,21 +106,13 @@
 				<version>${project.version}</version>
 			</dependency>
 
-			<!-- External dependencies -->
+			<!-- Jackson BOM -->
 			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
 				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.datatype</groupId>
-				<artifactId>jackson-datatype-jsr310</artifactId>
-				<version>${jackson.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
 			</dependency>
 
 			<!-- JSON-LD / RDF -->
@@ -130,9 +122,9 @@
 				<version>${titanium-json-ld.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.setl</groupId>
-				<artifactId>rdf-urdna</artifactId>
-				<version>${rdf-urdna.version}</version>
+				<groupId>com.apicatalog</groupId>
+				<artifactId>titanium-rdfc</artifactId>
+				<version>${titanium-rdfc.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish</groupId>
@@ -168,12 +160,17 @@
 				<artifactId>jakarta.annotation-api</artifactId>
 				<version>${jakarta-annotation.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.jspecify</groupId>
+				<artifactId>jspecify</artifactId>
+				<version>${jspecify.version}</version>
+			</dependency>
 
 			<!-- Tests -->
 			<dependency>
 				<groupId>org.assertj</groupId>
 				<artifactId>assertj-core</artifactId>
-				<version>${assert4j.version}</version>
+				<version>${assertj.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
