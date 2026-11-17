@@ -6,7 +6,7 @@
 
 	<groupId>com.dawex.sigourney</groupId>
 	<artifactId>sigourney-trustframework</artifactId>
-	<version>2.3.0</version>
+	<version>2.3.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>sigourney-trustframework</name>
@@ -19,26 +19,26 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<jreleaser-maven-plugin.version>1.23.0</jreleaser-maven-plugin.version>
+		<jreleaser-maven-plugin.version>1.27.0</jreleaser-maven-plugin.version>
 		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+		<maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
 		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
-		<maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
 
 		<assertj.version>3.27.7</assertj.version>
-		<bouncycastle.version>1.84</bouncycastle.version>
-		<jackson.version>2.21.4</jackson.version>
+		<bouncycastle.version>1.87</bouncycastle.version>
+		<jackson.version>2.23.0</jackson.version>
 		<jakarta-annotation.version>3.0.0</jakarta-annotation.version>
 		<jakarta-json.version>2.0.1</jakarta-json.version>
-		<json-path.version>2.10.0</json-path.version>
-		<jspecify.version>1.0.0</jspecify.version>
-		<junit.version>5.14.4</junit.version>
-		<mockito.version>5.23.0</mockito.version>
-		<nimbus-jose-jwt.version>10.9</nimbus-jose-jwt.version>
-		<openapi-generator.version>7.22.0</openapi-generator.version>
-		<swagger.version>2.2.48</swagger.version>
+		<json-path.version>3.0.0</json-path.version>
+		<jspecify.version>1.0.1</jspecify.version>
+		<junit.version>6.1.3</junit.version>
+		<mockito.version>5.24.0</mockito.version>
+		<nimbus-jose-jwt.version>10.10</nimbus-jose-jwt.version>
+		<openapi-generator.version>7.27.0</openapi-generator.version>
+		<swagger.version>2.2.55</swagger.version>
 		<titanium-json-ld.version>1.7.0</titanium-json-ld.version>
-		<titanium-rdfc.version>2.0.0</titanium-rdfc.version>
+		<titanium-rdfc.version>3.0.0</titanium-rdfc.version>
 	</properties>
 
 	<modules>
